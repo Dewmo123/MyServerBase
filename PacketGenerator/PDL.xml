@@ -1,10 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--가독성을 위해 dataPacket을 제일 위부터 쓰기!!-->
 <PDL>
-  <packet name="C_Chat">
-	<string name="chat"/>
-  </packet>
-  <packet name="S_Chat">
-	<int name="playerId"/>
-	<string name="chat"/>
-  </packet>
+	<dataPacket name ="VectorPacket">
+		<float name="x"/>
+		<float name="y"/>
+		<float name="z"/>
+	</dataPacket>
+	<packet name="C_Chat">
+		<string name="chat"/>
+	</packet>
+	<packet name="S_Chat">
+		<int name="playerId"/>
+		<string name="chat"/>
+		<VectorPacket name ="Pos"/>
+	</packet>
 </PDL>

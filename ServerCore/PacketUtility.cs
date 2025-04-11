@@ -29,14 +29,14 @@ namespace ServerCore
             result = new List<T>();
             for (int i = 0; i < num2; i++)
             {
-                num += ReadDataPacket<T>(buffer, offset + num, out var result2);
+                num += ReadDataPacketData<T>(buffer, offset + num, out var result2);
                 result.Add(result2);
             }
 
             return num;
         }
 
-        public static ushort ReadDataPacket<T>(ArraySegment<byte> buffer, int offset, out T result) where T : IDataPacket, new()
+        public static ushort ReadDataPacketData<T>(ArraySegment<byte> buffer, int offset, out T result) where T : IDataPacket, new()
         {
             ushort num = 0;
             result = new T();
@@ -49,7 +49,7 @@ namespace ServerCore
             return 4;
         }
 
-        public static ushort ReadUShortData(ArraySegment<byte> buffer, int offset, out ushort result)
+        public static ushort ReadUshortData(ArraySegment<byte> buffer, int offset, out ushort result)
         {
             result = BitConverter.ToUInt16(buffer.Array, buffer.Offset + offset);
             return 2;
@@ -80,16 +80,16 @@ namespace ServerCore
         public static ushort AppendListData<T>(List<T> data, ArraySegment<byte> buffer, int offset) where T : IDataPacket, new()
         {
             ushort num = 0;
-            num += AppendUShortData((ushort)data.Count, buffer, offset);
+            num += AppendUshortData((ushort)data.Count, buffer, offset);
             for (int i = 0; i < data.Count; i++)
             {
-                num += AppendDataPacket(data[i], buffer, offset + num);
+                num += AppendDataPacketData(data[i], buffer, offset + num);
             }
 
             return num;
         }
 
-        public static ushort AppendDataPacket<T>(T data, ArraySegment<byte> buffer, int offset) where T : IDataPacket, new()
+        public static ushort AppendDataPacketData<T>(T data, ArraySegment<byte> buffer, int offset) where T : IDataPacket, new()
         {
             ushort num = 0;
             return (ushort)(num + data.Serialize(buffer, offset));
@@ -102,7 +102,7 @@ namespace ServerCore
             return num;
         }
 
-        public static ushort AppendUShortData(ushort data, ArraySegment<byte> buffer, int offset)
+        public static ushort AppendUshortData(ushort data, ArraySegment<byte> buffer, int offset)
         {
             ushort num = 2;
             Buffer.BlockCopy(BitConverter.GetBytes(data), 0, buffer.Array, buffer.Offset + offset, num);

@@ -26,15 +26,10 @@ class PacketManager
 
 	public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
 	{
-		ushort count = 0;
-
-		ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
-		count += 2;
-		ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
-		count += 2;
+		ushort packetId = PacketUtility.ReadPacketID(buffer);
 
 		Action<PacketSession, ArraySegment<byte>> action = null;
-		if (_onRecv.TryGetValue(id, out action))
+		if (_onRecv.TryGetValue(packetId, out action))
 			action.Invoke(session, buffer);
 	}
 

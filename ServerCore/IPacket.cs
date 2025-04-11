@@ -15,6 +15,6 @@ namespace ServerCore
     public interface IDataPacket
     {
         ushort Serialize(ArraySegment<byte> segment, int offset);
-        ushort Deserialize(ArraySegment<byte> segment,int offset);
+        ushort Deserialize(ArraySegment<byte> segment, int offset);
     }
 }
