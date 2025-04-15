@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Server.Rooms;
 using ServerCore;
 
 namespace Server
@@ -12,11 +13,11 @@ namespace Server
 	class Program
 	{
 		static Listener _listener = new Listener();
-		public static GameRoom Room = new GameRoom();
+		public static RoomManager RoomManager = new RoomManager();
 
 		static void FlushRoom()
 		{
-			Room.Push(() => Room.Flush());
+			RoomManager.FlushRooms();
 			JobTimer.Instance.Push(FlushRoom, 250);
 		}
 

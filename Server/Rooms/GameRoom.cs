@@ -3,14 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Server
+namespace Server.Rooms
 {
 	class GameRoom : IJobQueue
 	{
+		public int MaxSessionCount { get; private set; } = 15;//임의
+		public int SessionCount => _sessions.Count;
+
 		List<ClientSession> _sessions = new List<ClientSession>();
 		JobQueue _jobQueue = new JobQueue();
 		List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
-
 		public void Push(Action job)
 		{
 			_jobQueue.Push(job);
@@ -26,20 +28,18 @@ namespace Server
 			_pendingList.Clear();
 		}
 
-		public void Broadcast(ClientSession session, string chat)
+		public void Broadcast(IPacket packet)
 		{
-			S_Chat packet = new S_Chat();
-			packet.playerId = session.SessionId;
-			packet.chat =  $"{chat} I am {packet.playerId}";
-			ArraySegment<byte> segment = packet.Write();
-
-			_pendingList.Add(segment);
+			_pendingList.Add(packet.Serialize());
 		}
 
-		public void Enter(ClientSession session)
+		public bool Enter(ClientSession session)
 		{
+			if (_sessions.Count >= MaxSessionCount)
+				return false;
 			_sessions.Add(session);
 			session.Room = this;
+			return true;
 		}
 
 		public void Leave(ClientSession session)

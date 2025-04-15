@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ServerCore;
 using System.Net;
+using Server.Rooms;
 
 namespace Server
 {
@@ -17,8 +18,6 @@ namespace Server
 		public override void OnConnected(EndPoint endPoint)
 		{
 			Console.WriteLine($"OnConnected : {endPoint}");
-
-			Program.Room.Push(() => Program.Room.Enter(this));
 		}
 
 		public override void OnRecvPacket(ArraySegment<byte> buffer)

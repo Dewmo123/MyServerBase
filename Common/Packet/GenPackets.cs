@@ -6,8 +6,9 @@ using ServerCore;
 
 public enum PacketID
 {
-	C_Chat = 1,
-	S_Chat = 2,
+	C_RoomEnter = 1,
+	S_RoomList = 2,
+	C_RoomList = 3,
 	
 }
 
@@ -36,11 +37,34 @@ class VectorPacket : IDataPacket
 	}
 }
 
-class C_Chat : IPacket
+class RoomInfoPacket : IDataPacket
 {
-	public string chat;
+	public int maxCount;
+	public int currentCount;
 
-	public ushort Protocol { get { return (ushort)PacketID.C_Chat; } }
+	public ushort Deserialize(ArraySegment<byte> segment, int offset)
+	{
+		ushort count = (ushort)offset;
+		count += PacketUtility.ReadIntData(segment, count, out maxCount);
+		count += PacketUtility.ReadIntData(segment, count, out currentCount);
+		return (ushort)(count - offset);
+	}
+
+	public ushort Serialize(ArraySegment<byte> segment, int offset)
+	{
+		ushort count = (ushort)offset;
+		count += PacketUtility.AppendIntData(this.maxCount, segment, count);
+		count += PacketUtility.AppendIntData(this.currentCount, segment, count);
+		return (ushort)(count - offset);
+	}
+}
+
+class C_RoomEnter : IPacket
+{
+	public string name;
+	public int roomId;
+
+	public ushort Protocol { get { return (ushort)PacketID.C_RoomEnter; } }
 
 	public void Deserialize(ArraySegment<byte> segment)
 	{
@@ -48,7 +72,8 @@ class C_Chat : IPacket
 
 		count += sizeof(ushort);
 		count += sizeof(ushort);
-		count += PacketUtility.ReadStringData(segment, count, out chat);
+		count += PacketUtility.ReadStringData(segment, count, out name);
+		count += PacketUtility.ReadIntData(segment, count, out roomId);
 	}
 
 	public ArraySegment<byte> Serialize()
@@ -58,19 +83,18 @@ class C_Chat : IPacket
 
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(count, segment, this.Protocol);
-		count += PacketUtility.AppendStringData(this.chat, segment, count);
+		count += PacketUtility.AppendStringData(this.name, segment, count);
+		count += PacketUtility.AppendIntData(this.roomId, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
 }
 
-class S_Chat : IPacket
+class S_RoomList : IPacket
 {
-	public int playerId;
-	public string chat;
-	public VectorPacket Pos;
+	
 
-	public ushort Protocol { get { return (ushort)PacketID.S_Chat; } }
+	public ushort Protocol { get { return (ushort)PacketID.S_RoomList; } }
 
 	public void Deserialize(ArraySegment<byte> segment)
 	{
@@ -78,9 +102,7 @@ class S_Chat : IPacket
 
 		count += sizeof(ushort);
 		count += sizeof(ushort);
-		count += PacketUtility.ReadIntData(segment, count, out playerId);
-		count += PacketUtility.ReadStringData(segment, count, out chat);
-		count += PacketUtility.ReadDataPacketData(segment, count, out Pos);
+		
 	}
 
 	public ArraySegment<byte> Serialize()
@@ -90,9 +112,35 @@ class S_Chat : IPacket
 
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(count, segment, this.Protocol);
-		count += PacketUtility.AppendIntData(this.playerId, segment, count);
-		count += PacketUtility.AppendStringData(this.chat, segment, count);
-		count += PacketUtility.AppendDataPacketData(this.Pos, segment, count);
+		
+		PacketUtility.AppendUshortData(count, segment, 0);
+		return SendBufferHelper.Close(count);
+	}
+}
+
+class C_RoomList : IPacket
+{
+	public List<RoomInfoPacket> roomInfos;
+
+	public ushort Protocol { get { return (ushort)PacketID.C_RoomList; } }
+
+	public void Deserialize(ArraySegment<byte> segment)
+	{
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += sizeof(ushort);
+		count += PacketUtility.ReadListData(segment, count, out roomInfos);
+	}
+
+	public ArraySegment<byte> Serialize()
+	{
+		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += PacketUtility.AppendUshortData(count, segment, this.Protocol);
+		count += PacketUtility.AppendListData(this.roomInfos, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}

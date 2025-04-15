@@ -1,4 +1,5 @@
 ﻿using Server;
+using Server.Rooms;
 using ServerCore;
 using System;
 using System.Collections.Generic;
@@ -6,17 +7,14 @@ using System.Text;
 
 class PacketHandler
 {
-	public static void C_ChatHandler(PacketSession session, IPacket packet)
-	{
-		C_Chat chatPacket = packet as C_Chat;
-		ClientSession clientSession = session as ClientSession;
+    internal static void C_RoomEnterHandler(PacketSession session, IPacket packet)
+    {
+        var enterPacket = packet as C_RoomEnter;
+        var clientSession = session as ClientSession;
+        RoomManager.Instance.EnterRoom(clientSession, enterPacket.roomId);
+    }
 
-		if (clientSession.Room == null)
-			return;
-
-		GameRoom room = clientSession.Room;
-		room.Push(
-			() => room.Broadcast(clientSession, chatPacket.chat)
-		);
-	}
+    internal static void C_RoomListHandler(PacketSession session, IPacket packet)
+    {
+    }
 }

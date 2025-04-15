@@ -139,29 +139,11 @@ class {0} : IDataPacket
         public static string memberFormat =
 @"public {0} {1};";
 
-        // {0} 리스트 이름 [대문자]
-        // {1} 리스트 이름 [소문자]
-        // {2} 멤버 변수들
-        // {3} 멤버 변수 Read
-        // {4} 멤버 변수 Write
+
+        // {0} 변수 형식
+        // {1} 변수 이름
         public static string memberListFormat =
-@"public class {0}
-{{
-	{2}
-
-	public void Read(ReadOnlySpan<byte> s, ref ushort count)
-	{{
-		{3}
-	}}
-
-	public bool Write(Span<byte> s, ref ushort count)
-	{{
-		bool success = true;
-		{4}
-		return success;
-	}}	
-}}
-public List<{0}> {1}s = new List<{0}>();";
+@"public List<{0}> {1};";
         /// <summary>
         ///{0} 변수 형식 <br/>
         ///{1} 변수 이름
@@ -202,26 +184,8 @@ for (int i = 0; i < {1}Len; i++)
         public static string writeFormat =
 @"count += PacketUtility.Append{0}Data(this.{1}, segment, count);";
 
-        // {0} 변수 이름
-        // {1} 변수 형식
-        public static string writeByteFormat =
-@"segment.Array[segment.Offset + count] = (byte)this.{0};
-count += sizeof({1});";
-
-        // {0} 변수 이름
-        public static string writeStringFormat =
-@"ushort {0}Len = (ushort)Encoding.Unicode.GetBytes(this.{0}, 0, this.{0}.Length, segment.Array, segment.Offset + count + sizeof(ushort));
-success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), {0}Len);
-count += sizeof(ushort);
-count += {0}Len;";
 
         // {0} 리스트 이름 [대문자]
         // {1} 리스트 이름 [소문자]
-        public static string writeListFormat =
-@"success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)this.{1}s.Count);
-count += sizeof(ushort);
-foreach ({0} {1} in this.{1}s)
-	success &= {1}.Write(s, ref count);";
-
     }
 }

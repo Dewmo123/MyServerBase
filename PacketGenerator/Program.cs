@@ -39,8 +39,10 @@ namespace PacketGenerator
                 while (r.Read())
                 {
                     if (r.Depth == 1 && r.NodeType == XmlNodeType.Element)
+                    {
+
                         ParsePacket(r);
-                    //Console.WriteLine(r.Name + " " + r["name"]);
+                    }
                 }
 
                 string fileText = string.Format(PacketFormat.fileFormat, packetEnums, genPackets);
@@ -77,7 +79,7 @@ namespace PacketGenerator
 
             if (packetName.StartsWith("S_") || packetName.StartsWith("s_"))
                 clientRegister += string.Format(PacketFormat.managerRegisterFormat, packetName) + Environment.NewLine;
-            else if(packetName.StartsWith("C_") || packetName.StartsWith("c_"))
+            else if (packetName.StartsWith("C_") || packetName.StartsWith("c_"))
                 serverRegister += string.Format(PacketFormat.managerRegisterFormat, packetName) + Environment.NewLine;
         }
 
@@ -95,7 +97,10 @@ namespace PacketGenerator
             int depth = r.Depth + 1;
             while (r.Read())
             {
+                Console.WriteLine(r.Name + " " + r.Depth + ' ' + r.NodeType);
                 if (r.Depth != depth)
+                    break;
+                if (r.NodeType == XmlNodeType.EndElement)
                     break;
 
                 string memberName = r["name"];
@@ -131,10 +136,9 @@ namespace PacketGenerator
                         writeCode += string.Format(PacketFormat.writeFormat, changedType, memberName);
                         break;
                     case "list":
-                        Tuple<string, string, string> t = ParseList(r);
-                        memberCode += t.Item1;
-                        readCode += t.Item2;
-                        writeCode += t.Item3;
+                        memberCode += string.Format(PacketFormat.memberListFormat, GetListMember(r), memberName);
+                        readCode += string.Format(PacketFormat.readFormat, changedType, memberName);
+                        writeCode += string.Format(PacketFormat.writeFormat, changedType, memberName);
                         break;
                     default:
                         memberCode += string.Format(PacketFormat.memberFormat, memberType, memberName);
@@ -149,34 +153,10 @@ namespace PacketGenerator
             writeCode = writeCode.Replace("\n", "\n\t\t");
             return new Tuple<string, string, string>(memberCode, readCode, writeCode);
         }
-
-        public static Tuple<string, string, string> ParseList(XmlReader r)
+        public static string GetListMember(XmlReader r)
         {
-            string listName = r["name"];
-            if (string.IsNullOrEmpty(listName))
-            {
-                Console.WriteLine("List without name");
-                return null;
-            }
-
-            Tuple<string, string, string> t = ParseMembers(r);
-
-            string memberCode = string.Format(PacketFormat.memberListFormat,
-                FirstCharToUpper(listName),
-                FirstCharToLower(listName),
-                t.Item1,
-                t.Item2,
-                t.Item3);
-
-            string readCode = string.Format(PacketFormat.readListFormat,
-                FirstCharToUpper(listName),
-                FirstCharToLower(listName));
-
-            string writeCode = string.Format(PacketFormat.writeListFormat,
-                FirstCharToUpper(listName),
-                FirstCharToLower(listName));
-
-            return new Tuple<string, string, string>(memberCode, readCode, writeCode);
+            r.Read();
+            return FirstCharToUpper(r.Name);
         }
         public static string FirstCharToUpper(string input)
         {

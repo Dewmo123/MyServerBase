@@ -19,8 +19,10 @@ class PacketManager
 		
 	public void Register()
 	{
-		_onRecv.Add((ushort)PacketID.C_Chat, MakePacket<C_Chat>);
-		_handler.Add((ushort)PacketID.C_Chat, PacketHandler.C_ChatHandler);
+		_onRecv.Add((ushort)PacketID.C_RoomEnter, MakePacket<C_RoomEnter>);
+		_handler.Add((ushort)PacketID.C_RoomEnter, PacketHandler.C_RoomEnterHandler);
+		_onRecv.Add((ushort)PacketID.C_RoomList, MakePacket<C_RoomList>);
+		_handler.Add((ushort)PacketID.C_RoomList, PacketHandler.C_RoomListHandler);
 
 	}
 
