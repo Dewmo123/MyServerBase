@@ -23,20 +23,10 @@ namespace DummyClient
 
 			connector.Connect(endPoint, 
 				() => { return SessionManager.Instance.Generate(); },
-				500);
+				1);
 
 			while (true)
 			{
-				try
-				{
-					SessionManager.Instance.SendForEach();
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine(e.ToString());
-				}
-
-				Thread.Sleep(250);
 			}
 		}
 	}

@@ -105,6 +105,7 @@ namespace ServerCore
         public static ushort AppendUshortData(ushort data, ArraySegment<byte> buffer, int offset)
         {
             ushort num = 2;
+            Console.WriteLine("Offset: " + offset);
             Buffer.BlockCopy(BitConverter.GetBytes(data), 0, buffer.Array, buffer.Offset + offset, num);
             return num;
         }

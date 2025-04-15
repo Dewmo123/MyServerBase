@@ -105,9 +105,9 @@ class {0} : IPacket
 		ushort count = 0;
 
 		count += sizeof(ushort);
-		count += PacketUtility.AppendUshortData(count, segment, this.Protocol);
+		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		{3}
-		PacketUtility.AppendUshortData(count, segment, 0);
+		PacketUtility.AppendUshortData(0, segment, count);
 		return SendBufferHelper.Close(count);
 	}}
 }}

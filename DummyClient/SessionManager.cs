@@ -18,11 +18,11 @@ namespace DummyClient
 			{
 				foreach (ServerSession session in _sessions)
 				{
-					C_Chat chatPacket = new C_Chat();
-					chatPacket.chat = $"Hello Server !";
-					ArraySegment<byte> segment = chatPacket.Serialize();
+					//C_Chat chatPacket = new C_Chat();
+					//chatPacket.chat = $"Hello Server !";
+					//ArraySegment<byte> segment = chatPacket.Serialize();
 
-					session.Send(segment);
+					//session.Send(segment);
 				}
 			}
 		}

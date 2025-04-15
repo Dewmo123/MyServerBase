@@ -10,6 +10,7 @@
 	</dataPacket>
 
 	<dataPacket name="RoomInfoPacket">
+		<int name ="roomId"/>
 		<int name ="maxCount"/>
 		<int name ="currentCount"/>
 	</dataPacket>
@@ -18,9 +19,12 @@
 		<string name="name"/>
 		<int name ="roomId"/>
 	</packet>
+	<packet name="C_RoomExit">
+	</packet>
 	<packet name ="S_RoomList">
 	</packet>
-
+	<packet name="C_CreateRoom">
+	</packet>
 	<packet name ="C_RoomList">
 		<list name ="roomInfos">
 			<roomInfoPacket name ="att"/>

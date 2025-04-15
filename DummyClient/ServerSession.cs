@@ -10,7 +10,10 @@ namespace DummyClient
 	{
 		public override void OnConnected(EndPoint endPoint)
 		{
-			Console.WriteLine($"OnConnected : {endPoint}");			
+			Console.WriteLine($"OnConnected : {endPoint}");
+			C_CreateRoom pak = new C_CreateRoom();
+            Console.WriteLine("asd");
+            Send(pak.Serialize());
 		}
 
 		public override void OnDisconnected(EndPoint endPoint)
@@ -25,6 +28,7 @@ namespace DummyClient
 
 		public override void OnSend(int numOfBytes)
 		{
+            Console.WriteLine("SEND");
 			//Console.WriteLine($"Transferred bytes: {numOfBytes}");
 		}
 	}
