@@ -91,7 +91,7 @@ class C_RoomEnter : IPacket
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendStringData(this.name, segment, count);
 		count += PacketUtility.AppendIntData(this.roomId, segment, count);
-		PacketUtility.AppendUshortData(0, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
 }
@@ -119,7 +119,7 @@ class S_RoomEnter : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		
-		PacketUtility.AppendUshortData(0, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
 }
@@ -147,7 +147,7 @@ class C_RoomExit : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		
-		PacketUtility.AppendUshortData(0, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
 }
@@ -175,7 +175,7 @@ class C_CreateRoom : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		
-		PacketUtility.AppendUshortData(0, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
 }
@@ -203,7 +203,7 @@ class S_RoomList : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendListData(this.roomInfos, segment, count);
-		PacketUtility.AppendUshortData(0, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
 }
@@ -231,7 +231,7 @@ class C_RoomList : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		
-		PacketUtility.AppendUshortData(0, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
 }
