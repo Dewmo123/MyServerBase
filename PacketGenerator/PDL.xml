@@ -19,15 +19,18 @@
 		<string name="name"/>
 		<int name ="roomId"/>
 	</packet>
-	<packet name="C_RoomExit">
+	<packet name="S_RoomEnter">
+		<!--플레이어 정보 추가 예정-->
 	</packet>
-	<packet name ="S_RoomList">
+	<packet name="C_RoomExit">
 	</packet>
 	<packet name="C_CreateRoom">
 	</packet>
-	<packet name ="C_RoomList">
+	<packet name ="S_RoomList">
 		<list name ="roomInfos">
 			<roomInfoPacket name ="att"/>
 		</list>
+	</packet>
+	<packet name ="C_RoomList">
 	</packet>
 </PDL>

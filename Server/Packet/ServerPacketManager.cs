@@ -33,7 +33,8 @@ class PacketManager
 	public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
 	{
 		ushort packetId = PacketUtility.ReadPacketID(buffer);
-        Console.WriteLine(packetId);
+		foreach(var item in buffer.Array)
+            Console.Write(item);
 		Action<PacketSession, ArraySegment<byte>> action = null;
 		if (_onRecv.TryGetValue(packetId, out action))
 			action.Invoke(session, buffer);

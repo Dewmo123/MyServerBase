@@ -46,6 +46,8 @@ namespace Server.Rooms
                 return false;
             _sessions.Add(session);
             session.Room = this;
+            S_RoomEnter enterPacket = new();
+            session.Send(enterPacket.Serialize());
             return true;
         }
 

@@ -19,6 +19,8 @@ class PacketManager
 		
 	public void Register()
 	{
+		_onRecv.Add((ushort)PacketID.S_RoomEnter, MakePacket<S_RoomEnter>);
+		_handler.Add((ushort)PacketID.S_RoomEnter, PacketHandler.S_RoomEnterHandler);
 		_onRecv.Add((ushort)PacketID.S_RoomList, MakePacket<S_RoomList>);
 		_handler.Add((ushort)PacketID.S_RoomList, PacketHandler.S_RoomListHandler);
 

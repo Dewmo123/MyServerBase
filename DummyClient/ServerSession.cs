@@ -12,8 +12,12 @@ namespace DummyClient
 		{
 			Console.WriteLine($"OnConnected : {endPoint}");
 			C_CreateRoom pak = new C_CreateRoom();
-            Console.WriteLine("asd");
             Send(pak.Serialize());
+			C_RoomList pck = new();
+            Console.WriteLine(pck.Protocol);
+			var a = pck.Serialize();
+			Console.WriteLine("asd: "+a.Array[6]);
+			Send(a);
 		}
 
 		public override void OnDisconnected(EndPoint endPoint)

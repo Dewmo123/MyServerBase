@@ -6,7 +6,17 @@ using System.Text;
 
 class PacketHandler
 {
+    internal static void S_RoomEnterHandler(PacketSession session, IPacket packet)
+    {
+        Console.WriteLine("RoomEnter");
+    }
+
     internal static void S_RoomListHandler(PacketSession session, IPacket packet)
     {
+        var listPacket = packet as S_RoomList;
+        foreach(var item in listPacket.roomInfos)
+        {
+            Console.WriteLine($"{item.roomId}: {item.currentCount} / {item.maxCount}");
+        }
     }
 }

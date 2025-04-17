@@ -11,7 +11,6 @@ class PacketHandler
     internal static void C_CreateRoomHandler(PacketSession session, IPacket packet)
     {
         var clientSession = session as ClientSession;
-        Console.WriteLine("ASD");
         _roomManager.GenerateRoom(clientSession);
     }
 
@@ -32,7 +31,7 @@ class PacketHandler
     {
         var clientSession = session as ClientSession;
         var list = _roomManager.GetRoomInfos();
-        C_RoomList roomList = new C_RoomList();
+        S_RoomList roomList = new S_RoomList();
         roomList.roomInfos = list;
         clientSession.Send(roomList.Serialize());
     }

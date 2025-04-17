@@ -7,10 +7,11 @@ using ServerCore;
 public enum PacketID
 {
 	C_RoomEnter = 1,
-	C_RoomExit = 2,
-	S_RoomList = 3,
+	S_RoomEnter = 2,
+	C_RoomExit = 3,
 	C_CreateRoom = 4,
-	C_RoomList = 5,
+	S_RoomList = 5,
+	C_RoomList = 6,
 	
 }
 
@@ -95,11 +96,11 @@ class C_RoomEnter : IPacket
 	}
 }
 
-class C_RoomExit : IPacket
+class S_RoomEnter : IPacket
 {
 	
 
-	public ushort Protocol { get { return (ushort)PacketID.C_RoomExit; } }
+	public ushort Protocol { get { return (ushort)PacketID.S_RoomEnter; } }
 
 	public void Deserialize(ArraySegment<byte> segment)
 	{
@@ -123,11 +124,11 @@ class C_RoomExit : IPacket
 	}
 }
 
-class S_RoomList : IPacket
+class C_RoomExit : IPacket
 {
 	
 
-	public ushort Protocol { get { return (ushort)PacketID.S_RoomList; } }
+	public ushort Protocol { get { return (ushort)PacketID.C_RoomExit; } }
 
 	public void Deserialize(ArraySegment<byte> segment)
 	{
@@ -179,11 +180,11 @@ class C_CreateRoom : IPacket
 	}
 }
 
-class C_RoomList : IPacket
+class S_RoomList : IPacket
 {
 	public List<RoomInfoPacket> roomInfos;
 
-	public ushort Protocol { get { return (ushort)PacketID.C_RoomList; } }
+	public ushort Protocol { get { return (ushort)PacketID.S_RoomList; } }
 
 	public void Deserialize(ArraySegment<byte> segment)
 	{
@@ -202,6 +203,34 @@ class C_RoomList : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendListData(this.roomInfos, segment, count);
+		PacketUtility.AppendUshortData(0, segment, count);
+		return SendBufferHelper.Close(count);
+	}
+}
+
+class C_RoomList : IPacket
+{
+	
+
+	public ushort Protocol { get { return (ushort)PacketID.C_RoomList; } }
+
+	public void Deserialize(ArraySegment<byte> segment)
+	{
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += sizeof(ushort);
+		
+	}
+
+	public ArraySegment<byte> Serialize()
+	{
+		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
+		
 		PacketUtility.AppendUshortData(0, segment, count);
 		return SendBufferHelper.Close(count);
 	}
