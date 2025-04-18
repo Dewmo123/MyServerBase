@@ -19,4 +19,10 @@ class PacketHandler
             Console.WriteLine($"{item.roomId}: {item.currentCount} / {item.maxCount}");
         }
     }
+
+    internal static void S_TestTextHandler(PacketSession session, IPacket packet)
+    {
+        var test = packet as S_TestText;
+        Console.WriteLine(test.text);
+    }
 }

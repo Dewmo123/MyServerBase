@@ -13,7 +13,7 @@ namespace Server
 	class Program
 	{
 		static Listener _listener = new Listener();
-		public static RoomManager RoomManager = new RoomManager();
+		public static RoomManager RoomManager = RoomManager.Instance;
 
 		static void FlushRoom()
 		{

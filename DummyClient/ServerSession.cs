@@ -15,9 +15,7 @@ namespace DummyClient
             C_CreateRoom pak = new C_CreateRoom();
             Send(pak.Serialize());
             C_RoomList pck = new();
-            Console.WriteLine(pck.Protocol);
             var a = pck.Serialize();
-            Console.WriteLine("asd: " + a.Array[6]);
             Send(a);
         }
 

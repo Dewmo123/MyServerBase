@@ -8,10 +8,11 @@ namespace Server.Rooms
     class GameRoom : IJobQueue
     {
         private RoomManager _roomManager;
-        private int _roomId = 0;
+        public int RoomId { get; private set; } = 0;
+        public bool CanAddPlayer => SessionCount < MaxSessionCount;
         public GameRoom(RoomManager roomManager,int roomId)
         {
-            _roomId = roomId;
+            RoomId = roomId;
             _roomManager = roomManager;
         }
         public int MaxSessionCount { get; private set; } = 15;//임의
@@ -28,6 +29,7 @@ namespace Server.Rooms
         public void Flush()
         {
             // N ^ 2
+            Console.WriteLine("Flush");
             foreach (ClientSession s in _sessions)
                 s.Send(_pendingList);
 
@@ -40,15 +42,12 @@ namespace Server.Rooms
             _pendingList.Add(packet.Serialize());
         }
 
-        public bool Enter(ClientSession session)
+        public void Enter(ClientSession session)
         {
-            if (_sessions.Count >= MaxSessionCount)
-                return false;
             _sessions.Add(session);
             session.Room = this;
             S_RoomEnter enterPacket = new();
             session.Send(enterPacket.Serialize());
-            return true;
         }
 
         public void Leave(ClientSession session)
@@ -56,7 +55,7 @@ namespace Server.Rooms
             _sessions.Remove(session);
             if (SessionCount == 0)
             {
-                _roomManager.RemoveRoom(_roomId);
+                _roomManager.RemoveRoom(RoomId);
             }
         }
     }

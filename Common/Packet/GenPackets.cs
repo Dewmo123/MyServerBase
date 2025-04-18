@@ -12,6 +12,7 @@ public enum PacketID
 	C_CreateRoom = 4,
 	S_RoomList = 5,
 	C_RoomList = 6,
+	S_TestText = 7,
 	
 }
 
@@ -231,6 +232,34 @@ class C_RoomList : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		
+		PacketUtility.AppendUshortData(count, segment, 0);
+		return SendBufferHelper.Close(count);
+	}
+}
+
+class S_TestText : IPacket
+{
+	public string text;
+
+	public ushort Protocol { get { return (ushort)PacketID.S_TestText; } }
+
+	public void Deserialize(ArraySegment<byte> segment)
+	{
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += sizeof(ushort);
+		count += PacketUtility.ReadStringData(segment, count, out text);
+	}
+
+	public ArraySegment<byte> Serialize()
+	{
+		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
+		count += PacketUtility.AppendStringData(this.text, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}

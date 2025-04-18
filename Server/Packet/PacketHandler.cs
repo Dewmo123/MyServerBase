@@ -24,7 +24,9 @@ class PacketHandler
     internal static void C_RoomExitHandler(PacketSession session, IPacket packet)
     {
         var clientSession = session as ClientSession;
-        clientSession.Room.Leave(clientSession);
+        var room = clientSession.Room;
+        room.Push(() => room.Leave(clientSession));
+        Console.WriteLine($"Leave Room: {clientSession.SessionId}");
     }
 
     internal static void C_RoomListHandler(PacketSession session, IPacket packet)
