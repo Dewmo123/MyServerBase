@@ -12,11 +12,9 @@ namespace DummyClient
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"OnConnected : {endPoint}");
-            C_CreateRoom pak = new C_CreateRoom();
+            C_RoomEnter pak = new C_RoomEnter();
+            pak.roomId = 1;
             Send(pak.Serialize());
-            C_RoomList pck = new();
-            var a = pck.Serialize();
-            Send(a);
         }
 
         public override void OnDisconnected(EndPoint endPoint)

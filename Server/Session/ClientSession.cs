@@ -14,7 +14,9 @@ namespace Server
 	{
 		public int SessionId { get; set; }
 		public GameRoom Room { get; set; }
+		public PlayerInfoPacket myInfo { get; set; }
 
+		#region Callback
 		public override void OnConnected(EndPoint endPoint)
 		{
 			Console.WriteLine($"OnConnected : {endPoint}");
@@ -32,7 +34,7 @@ namespace Server
 			if (Room != null)
 			{
 				GameRoom room = Room;
-				room.Push(() => room.Leave(this));
+				room.Push(() => room.Leave(SessionId));
 				Room = null;
 			}
 
@@ -43,5 +45,6 @@ namespace Server
 		{
 			//Console.WriteLine($"Transferred bytes: {numOfBytes}");
 		}
-	}
+        #endregion
+    }
 }

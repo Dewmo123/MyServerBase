@@ -11,21 +11,39 @@ class PacketHandler
     internal static void C_CreateRoomHandler(PacketSession session, IPacket packet)
     {
         var clientSession = session as ClientSession;
-        _roomManager.GenerateRoom(clientSession);
+        int roomId = _roomManager.GenerateRoom();
+        EnterRoomProcess(roomId, clientSession);
     }
 
     internal static void C_RoomEnterHandler(PacketSession session, IPacket packet)
     {
         var enterPacket = packet as C_RoomEnter;
         var clientSession = session as ClientSession;
-        _roomManager.EnterRoom(clientSession, enterPacket.roomId);
+        EnterRoomProcess(enterPacket.roomId, clientSession);
+    }
+
+    private static void EnterRoomProcess(int roomId, ClientSession clientSession)
+    {
+        var room = _roomManager.GetRoomById(roomId);
+        if (room == default)
+            throw new NullReferenceException();
+        clientSession.myInfo = new PlayerInfoPacket()
+        {
+            direction = new VectorPacket(),
+            position = new VectorPacket(),
+            index = clientSession.SessionId
+        };
+        _roomManager.EnterRoom(clientSession, roomId);
+        room.SendAllPlayerInfosFirst(clientSession.SessionId);
+        room.Push(() => room.Broadcast(new S_RoomEnter() { newPlayer = clientSession.myInfo }));
     }
 
     internal static void C_RoomExitHandler(PacketSession session, IPacket packet)
     {
         var clientSession = session as ClientSession;
         var room = clientSession.Room;
-        room.Push(() => room.Leave(clientSession));
+        room.Push(() => room.Leave(clientSession.SessionId));
+        room.Push(() => room.Broadcast(new S_RoomExit() { Index = clientSession.SessionId }));
         Console.WriteLine($"Leave Room: {clientSession.SessionId}");
     }
 

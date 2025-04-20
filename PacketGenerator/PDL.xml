@@ -15,16 +15,23 @@
 		<int name ="currentCount"/>
 	</dataPacket>
 
+	<dataPacket name="PlayerInfoPacket">
+		<int name="index"/>
+		<VectorPacket name="position"/>
+		<VectorPacket name="direction"/>
+	</dataPacket>
+	
 	<packet name="C_RoomEnter">
-		<string name="name"/>
 		<int name ="roomId"/>
 	</packet>
 	<packet name="S_RoomEnter">
-		<!--플레이어 정보 추가 예정-->
+		<PlayerInfoPacket name="newPlayer"/>
 	</packet>
 	<packet name="C_RoomExit">
 	</packet>
-	
+	<packet name="S_RoomExit">
+		<int name="Index"/>
+	</packet>
 	<packet name="C_CreateRoom">
 	</packet>
 	<packet name ="S_RoomList">
@@ -36,5 +43,16 @@
 	</packet>
 	<packet name="S_TestText">
 		<string name="text"/>
+	</packet>
+	<packet name ="S_EnterRoomFirst">
+		<int name="myIndex"/>
+		<list name="playerInfos">
+			<playerInfoPacket name="att"/>
+		</list>
+	</packet>
+	<packet name="S_UpdateInfos">
+		<list name="playerInfos">
+			<playerInfoPacket name="att"/>
+		</list>
 	</packet>
 </PDL>

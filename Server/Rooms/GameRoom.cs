@@ -1,6 +1,7 @@
 ﻿using ServerCore;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace Server.Rooms
@@ -18,7 +19,7 @@ namespace Server.Rooms
         public int MaxSessionCount { get; private set; } = 15;//임의
         public int SessionCount => _sessions.Count;
 
-        List<ClientSession> _sessions = new List<ClientSession>();
+        Dictionary<int,ClientSession> _sessions = new Dictionary<int, ClientSession>();
         JobQueue _jobQueue = new JobQueue();
         List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
         public void Push(Action job)
@@ -29,11 +30,11 @@ namespace Server.Rooms
         public void Flush()
         {
             // N ^ 2
-            Console.WriteLine("Flush");
-            foreach (ClientSession s in _sessions)
+            //Console.WriteLine("Flush");
+            foreach (ClientSession s in _sessions.Values)
                 s.Send(_pendingList);
 
-            Console.WriteLine($"Flushed {_pendingList.Count} items");
+            //Console.WriteLine($"Flushed {_pendingList.Count} items");
             _pendingList.Clear();
         }
 
@@ -41,22 +42,54 @@ namespace Server.Rooms
         {
             _pendingList.Add(packet.Serialize());
         }
-
         public void Enter(ClientSession session)
         {
-            _sessions.Add(session);
+            _sessions.Add(session.SessionId,session);
             session.Room = this;
-            S_RoomEnter enterPacket = new();
-            session.Send(enterPacket.Serialize());
         }
 
-        public void Leave(ClientSession session)
+        public void Leave(int sessionId)
         {
-            _sessions.Remove(session);
+            _sessions.Remove(sessionId);
             if (SessionCount == 0)
             {
                 _roomManager.RemoveRoom(RoomId);
             }
+        }
+        public void SendAllPlayerInfosFirst(int sessionId)
+        {
+            S_EnterRoomFirst players = new();
+            players.playerInfos = new List<PlayerInfoPacket>();
+            Push(() =>
+            {
+                Console.WriteLine("SendAllPlayer");
+                players.myIndex = sessionId;
+                foreach (var player in _sessions)
+                {
+                    players.playerInfos.Add(new PlayerInfoPacket()
+                    {
+                        index = player.Key,
+                        direction = player.Value.myInfo.direction,
+                        position = player.Value.myInfo.position
+                    });
+                }
+                _sessions[sessionId].Send(players.Serialize());
+            });
+        }
+        public void UpdateRoom()
+        {
+            S_UpdateInfos updates = new();
+            updates.playerInfos = new List<PlayerInfoPacket>();
+            foreach(var player in _sessions)
+            {
+                updates.playerInfos.Add(new PlayerInfoPacket()
+                {
+                    index = player.Key,
+                    direction = player.Value.myInfo.direction,
+                    position = player.Value.myInfo.position
+                });
+            }
+            Broadcast(updates);
         }
     }
 }

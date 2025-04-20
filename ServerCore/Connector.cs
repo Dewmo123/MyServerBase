@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace ServerCore
 {
@@ -24,6 +25,7 @@ namespace ServerCore
 				args.UserToken = socket;
 
 				RegisterConnect(args);
+				Thread.Sleep(1000);
 			}
 		}
 

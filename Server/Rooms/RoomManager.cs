@@ -16,10 +16,9 @@ namespace Server.Rooms
             try
             {
                 _rwLock.EnterReadLock();
-                Console.WriteLine(_rooms.Count);
                 foreach (var room in _rooms.Values)
                 {
-                    room.Push(() => room.Broadcast(new S_TestText() { text = $"Room Id: {room.RoomId}" }));
+                    room.Push(() => room.UpdateRoom());
                     room.Push(() => room.Flush());
                 }
             }
@@ -58,7 +57,19 @@ namespace Server.Rooms
                 _rwLock.ExitWriteLock();
             }
         }
-        public bool GenerateRoom(ClientSession session)
+        public GameRoom GetRoomById(int roomId)
+        {
+            try
+            {
+                _rwLock.EnterReadLock();
+                return _rooms.GetValueOrDefault(roomId);
+            }
+            finally
+            {
+                _rwLock.ExitReadLock();
+            }
+        }
+        public int GenerateRoom()
         {
             try
             {
@@ -67,8 +78,7 @@ namespace Server.Rooms
                 Console.WriteLine($"Generate Room: {id}");
                 GameRoom room = new(Instance, id);
                 _rooms.Add(id, room);
-                _rwLock.ExitWriteLock();
-                return EnterRoom(session, id);
+                return id;
             }
             finally
             {

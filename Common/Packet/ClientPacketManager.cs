@@ -21,10 +21,16 @@ class PacketManager
 	{
 		_onRecv.Add((ushort)PacketID.S_RoomEnter, MakePacket<S_RoomEnter>);
 		_handler.Add((ushort)PacketID.S_RoomEnter, PacketHandler.S_RoomEnterHandler);
+		_onRecv.Add((ushort)PacketID.S_RoomExit, MakePacket<S_RoomExit>);
+		_handler.Add((ushort)PacketID.S_RoomExit, PacketHandler.S_RoomExitHandler);
 		_onRecv.Add((ushort)PacketID.S_RoomList, MakePacket<S_RoomList>);
 		_handler.Add((ushort)PacketID.S_RoomList, PacketHandler.S_RoomListHandler);
 		_onRecv.Add((ushort)PacketID.S_TestText, MakePacket<S_TestText>);
 		_handler.Add((ushort)PacketID.S_TestText, PacketHandler.S_TestTextHandler);
+		_onRecv.Add((ushort)PacketID.S_EnterRoomFirst, MakePacket<S_EnterRoomFirst>);
+		_handler.Add((ushort)PacketID.S_EnterRoomFirst, PacketHandler.S_EnterRoomFirstHandler);
+		_onRecv.Add((ushort)PacketID.S_UpdateInfos, MakePacket<S_UpdateInfos>);
+		_handler.Add((ushort)PacketID.S_UpdateInfos, PacketHandler.S_UpdateInfosHandler);
 
 	}
 

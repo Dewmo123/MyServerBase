@@ -13,11 +13,11 @@ namespace Server
 	class Program
 	{
 		static Listener _listener = new Listener();
-		public static RoomManager RoomManager = RoomManager.Instance;
+		public static RoomManager roomManager = RoomManager.Instance;
 
 		static void FlushRoom()
 		{
-			RoomManager.FlushRooms();
+            roomManager.FlushRooms();
 			JobTimer.Instance.Push(FlushRoom, 250);
 		}
 
@@ -31,7 +31,7 @@ namespace Server
 
 			_listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
 			Console.WriteLine("Listening...");
-
+			roomManager.GenerateRoom();
 			//FlushRoom();
 			JobTimer.Instance.Push(FlushRoom);
 
