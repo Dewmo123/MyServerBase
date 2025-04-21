@@ -25,7 +25,6 @@ namespace ServerCore
 				args.UserToken = socket;
 
 				RegisterConnect(args);
-				Thread.Sleep(1000);
 			}
 		}
 

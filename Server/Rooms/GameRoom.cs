@@ -11,10 +11,12 @@ namespace Server.Rooms
         private RoomManager _roomManager;
         public int RoomId { get; private set; } = 0;
         public bool CanAddPlayer => SessionCount < MaxSessionCount;
-        public GameRoom(RoomManager roomManager,int roomId)
+        public string RoomName { get; private set; }
+        public GameRoom(RoomManager roomManager,string name,int roomId)
         {
             RoomId = roomId;
             _roomManager = roomManager;
+            RoomName = name;
         }
         public int MaxSessionCount { get; private set; } = 15;//임의
         public int SessionCount => _sessions.Count;

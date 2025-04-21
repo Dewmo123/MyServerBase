@@ -10,8 +10,9 @@ class PacketHandler
     private static RoomManager _roomManager = RoomManager.Instance;
     internal static void C_CreateRoomHandler(PacketSession session, IPacket packet)
     {
+        var createRoom = packet as C_CreateRoom;
         var clientSession = session as ClientSession;
-        int roomId = _roomManager.GenerateRoom();
+        int roomId = _roomManager.GenerateRoom(createRoom.roomName);
         EnterRoomProcess(roomId, clientSession);
     }
 

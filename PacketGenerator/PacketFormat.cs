@@ -84,7 +84,7 @@ public enum PacketID
         // {3} 멤버 변수 Write
         public static string packetFormat =
 @"
-class {0} : IPacket
+public class {0} : IPacket
 {{
 	{1}
 
@@ -114,7 +114,7 @@ class {0} : IPacket
 ";
         public static string dataPacketFormat =
             @"
-class {0} : IDataPacket
+public class {0} : IDataPacket
 {{
 	{1}
 

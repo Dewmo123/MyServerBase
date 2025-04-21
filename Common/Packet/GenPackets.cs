@@ -19,7 +19,7 @@ public enum PacketID
 	
 }
 
-class VectorPacket : IDataPacket
+public class VectorPacket : IDataPacket
 {
 	public float x;
 	public float y;
@@ -44,11 +44,12 @@ class VectorPacket : IDataPacket
 	}
 }
 
-class RoomInfoPacket : IDataPacket
+public class RoomInfoPacket : IDataPacket
 {
 	public int roomId;
 	public int maxCount;
 	public int currentCount;
+	public string roomName;
 
 	public ushort Deserialize(ArraySegment<byte> segment, int offset)
 	{
@@ -56,6 +57,7 @@ class RoomInfoPacket : IDataPacket
 		count += PacketUtility.ReadIntData(segment, count, out roomId);
 		count += PacketUtility.ReadIntData(segment, count, out maxCount);
 		count += PacketUtility.ReadIntData(segment, count, out currentCount);
+		count += PacketUtility.ReadStringData(segment, count, out roomName);
 		return (ushort)(count - offset);
 	}
 
@@ -65,11 +67,12 @@ class RoomInfoPacket : IDataPacket
 		count += PacketUtility.AppendIntData(this.roomId, segment, count);
 		count += PacketUtility.AppendIntData(this.maxCount, segment, count);
 		count += PacketUtility.AppendIntData(this.currentCount, segment, count);
+		count += PacketUtility.AppendStringData(this.roomName, segment, count);
 		return (ushort)(count - offset);
 	}
 }
 
-class PlayerInfoPacket : IDataPacket
+public class PlayerInfoPacket : IDataPacket
 {
 	public int index;
 	public VectorPacket position;
@@ -94,7 +97,7 @@ class PlayerInfoPacket : IDataPacket
 	}
 }
 
-class C_RoomEnter : IPacket
+public class C_RoomEnter : IPacket
 {
 	public int roomId;
 
@@ -122,7 +125,7 @@ class C_RoomEnter : IPacket
 	}
 }
 
-class S_RoomEnter : IPacket
+public class S_RoomEnter : IPacket
 {
 	public PlayerInfoPacket newPlayer;
 
@@ -150,7 +153,7 @@ class S_RoomEnter : IPacket
 	}
 }
 
-class C_RoomExit : IPacket
+public class C_RoomExit : IPacket
 {
 	
 
@@ -178,7 +181,7 @@ class C_RoomExit : IPacket
 	}
 }
 
-class S_RoomExit : IPacket
+public class S_RoomExit : IPacket
 {
 	public int Index;
 
@@ -206,9 +209,9 @@ class S_RoomExit : IPacket
 	}
 }
 
-class C_CreateRoom : IPacket
+public class C_CreateRoom : IPacket
 {
-	
+	public string roomName;
 
 	public ushort Protocol { get { return (ushort)PacketID.C_CreateRoom; } }
 
@@ -218,7 +221,7 @@ class C_CreateRoom : IPacket
 
 		count += sizeof(ushort);
 		count += sizeof(ushort);
-		
+		count += PacketUtility.ReadStringData(segment, count, out roomName);
 	}
 
 	public ArraySegment<byte> Serialize()
@@ -228,13 +231,13 @@ class C_CreateRoom : IPacket
 
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
-		
+		count += PacketUtility.AppendStringData(this.roomName, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
 }
 
-class S_RoomList : IPacket
+public class S_RoomList : IPacket
 {
 	public List<RoomInfoPacket> roomInfos;
 
@@ -262,7 +265,7 @@ class S_RoomList : IPacket
 	}
 }
 
-class C_RoomList : IPacket
+public class C_RoomList : IPacket
 {
 	
 
@@ -290,7 +293,7 @@ class C_RoomList : IPacket
 	}
 }
 
-class S_TestText : IPacket
+public class S_TestText : IPacket
 {
 	public string text;
 
@@ -318,7 +321,7 @@ class S_TestText : IPacket
 	}
 }
 
-class S_EnterRoomFirst : IPacket
+public class S_EnterRoomFirst : IPacket
 {
 	public int myIndex;
 	public List<PlayerInfoPacket> playerInfos;
@@ -349,7 +352,7 @@ class S_EnterRoomFirst : IPacket
 	}
 }
 
-class S_UpdateInfos : IPacket
+public class S_UpdateInfos : IPacket
 {
 	public List<PlayerInfoPacket> playerInfos;
 

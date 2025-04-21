@@ -69,14 +69,14 @@ namespace Server.Rooms
                 _rwLock.ExitReadLock();
             }
         }
-        public int GenerateRoom()
+        public int GenerateRoom(string roomName)
         {
             try
             {
                 _rwLock.EnterWriteLock();
                 int id = ++_roomIdGenerator;
                 Console.WriteLine($"Generate Room: {id}");
-                GameRoom room = new(Instance, id);
+                GameRoom room = new(Instance,roomName, id);
                 _rooms.Add(id, room);
                 return id;
             }
@@ -96,6 +96,7 @@ namespace Server.Rooms
                 {
                     list.Add(new RoomInfoPacket()
                     {
+                        roomName = room.Value.RoomName,
                         roomId = room.Key,
                         maxCount = room.Value.MaxSessionCount,
                         currentCount = room.Value.SessionCount
