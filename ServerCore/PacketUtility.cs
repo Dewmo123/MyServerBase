@@ -66,6 +66,11 @@ namespace ServerCore
             result = BitConverter.ToSingle(buffer.Array, buffer.Offset + offset);
             return 4;
         }
+        public static ushort ReadBoolData(ArraySegment<byte> buffer, int offset, out bool result)
+        {
+            result = BitConverter.ToBoolean(buffer.Array, buffer.Offset + offset);
+            return 1;
+        }
 
         public static ushort ReadStringData(ArraySegment<byte> buffer, int offset, out string result)
         {
@@ -105,6 +110,12 @@ namespace ServerCore
         public static ushort AppendUshortData(ushort data, ArraySegment<byte> buffer, int offset)
         {
             ushort num = 2;
+            Buffer.BlockCopy(BitConverter.GetBytes(data), 0, buffer.Array, buffer.Offset + offset, num);
+            return num;
+        }
+        public static ushort AppendBoolData(bool data, ArraySegment<byte> buffer, int offset)
+        {
+            ushort num = 1;
             Buffer.BlockCopy(BitConverter.GetBytes(data), 0, buffer.Array, buffer.Offset + offset, num);
             return num;
         }

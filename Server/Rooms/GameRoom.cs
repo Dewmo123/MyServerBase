@@ -87,6 +87,8 @@ namespace Server.Rooms
                 updates.playerInfos.Add(new PlayerInfoPacket()
                 {
                     index = player.Key,
+                    isAiming = player.Value.myInfo.isAiming,
+                    mouse = player.Value.myInfo.mouse,
                     direction = player.Value.myInfo.direction,
                     position = player.Value.myInfo.position
                 });

@@ -18,8 +18,10 @@
 
 	<dataPacket name="PlayerInfoPacket">
 		<int name="index"/>
+		<bool name="isAiming"/>
 		<VectorPacket name="position"/>
 		<VectorPacket name="direction"/>
+		<VectorPacket name="mouse"/>
 	</dataPacket>
 	
 	<packet name="C_RoomEnter">
@@ -56,5 +58,8 @@
 		<list name="playerInfos">
 			<playerInfoPacket name="att"/>
 		</list>
+	</packet>
+	<packet name="C_UpdateInfo">
+		<PlayerInfoPacket name="playerInfo"/>
 	</packet>
 </PDL>

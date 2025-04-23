@@ -30,8 +30,10 @@ class PacketHandler
             throw new NullReferenceException();
         clientSession.myInfo = new PlayerInfoPacket()
         {
+            isAiming = false,
             direction = new VectorPacket(),
             position = new VectorPacket(),
+            mouse = new VectorPacket(),
             index = clientSession.SessionId
         };
         _roomManager.EnterRoom(clientSession, roomId);
@@ -55,5 +57,13 @@ class PacketHandler
         S_RoomList roomList = new S_RoomList();
         roomList.roomInfos = list;
         clientSession.Send(roomList.Serialize());
+    }
+
+    internal static void C_UpdateInfoHandler(PacketSession session, IPacket packet)
+    {
+        var clientSession = session as ClientSession;
+        var playerPacket = packet as C_UpdateInfo;
+        clientSession.myInfo = playerPacket.playerInfo;
+        Console.WriteLine($"({playerPacket.playerInfo.position.x},{playerPacket.playerInfo.position.y},{playerPacket.playerInfo.position.z})");
     }
 }

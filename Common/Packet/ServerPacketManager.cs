@@ -27,6 +27,8 @@ class PacketManager
 		_handler.Add((ushort)PacketID.C_CreateRoom, PacketHandler.C_CreateRoomHandler);
 		_onRecv.Add((ushort)PacketID.C_RoomList, MakePacket<C_RoomList>);
 		_handler.Add((ushort)PacketID.C_RoomList, PacketHandler.C_RoomListHandler);
+		_onRecv.Add((ushort)PacketID.C_UpdateInfo, MakePacket<C_UpdateInfo>);
+		_handler.Add((ushort)PacketID.C_UpdateInfo, PacketHandler.C_UpdateInfoHandler);
 
 	}
 

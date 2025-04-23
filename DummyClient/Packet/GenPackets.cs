@@ -16,6 +16,7 @@ public enum PacketID
 	S_TestText = 8,
 	S_EnterRoomFirst = 9,
 	S_UpdateInfos = 10,
+	C_UpdateInfo = 11,
 	
 }
 
@@ -75,15 +76,19 @@ public class RoomInfoPacket : IDataPacket
 public class PlayerInfoPacket : IDataPacket
 {
 	public int index;
+	public bool isAiming;
 	public VectorPacket position;
 	public VectorPacket direction;
+	public VectorPacket mouse;
 
 	public ushort Deserialize(ArraySegment<byte> segment, int offset)
 	{
 		ushort count = (ushort)offset;
 		count += PacketUtility.ReadIntData(segment, count, out index);
+		count += PacketUtility.ReadBoolData(segment, count, out isAiming);
 		count += PacketUtility.ReadDataPacketData(segment, count, out position);
 		count += PacketUtility.ReadDataPacketData(segment, count, out direction);
+		count += PacketUtility.ReadDataPacketData(segment, count, out mouse);
 		return (ushort)(count - offset);
 	}
 
@@ -91,8 +96,10 @@ public class PlayerInfoPacket : IDataPacket
 	{
 		ushort count = (ushort)offset;
 		count += PacketUtility.AppendIntData(this.index, segment, count);
+		count += PacketUtility.AppendBoolData(this.isAiming, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.position, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.direction, segment, count);
+		count += PacketUtility.AppendDataPacketData(this.mouse, segment, count);
 		return (ushort)(count - offset);
 	}
 }
@@ -375,6 +382,34 @@ public class S_UpdateInfos : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendListData(this.playerInfos, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
+		return SendBufferHelper.Close(count);
+	}
+}
+
+public class C_UpdateInfo : IPacket
+{
+	public PlayerInfoPacket playerInfo;
+
+	public ushort Protocol { get { return (ushort)PacketID.C_UpdateInfo; } }
+
+	public void Deserialize(ArraySegment<byte> segment)
+	{
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += sizeof(ushort);
+		count += PacketUtility.ReadDataPacketData(segment, count, out playerInfo);
+	}
+
+	public ArraySegment<byte> Serialize()
+	{
+		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
+		count += PacketUtility.AppendDataPacketData(this.playerInfo, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
