@@ -101,7 +101,7 @@ namespace PacketGenerator
                 if (r.Depth != depth)
                     break;
                 if (r.NodeType == XmlNodeType.EndElement)
-                    break;
+                    continue;
 
                 string memberName = r["name"];
                 if (string.IsNullOrEmpty(memberName))

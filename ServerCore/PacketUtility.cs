@@ -48,7 +48,11 @@ namespace ServerCore
             result = BitConverter.ToInt32(buffer.Array, buffer.Offset + offset);
             return 4;
         }
-
+        public static ushort ReadLongData(ArraySegment<byte> buffer, int offset, out long result)
+        {
+            result = BitConverter.ToInt32(buffer.Array, buffer.Offset + offset);
+            return 8;
+        }
         public static ushort ReadUshortData(ArraySegment<byte> buffer, int offset, out ushort result)
         {
             result = BitConverter.ToUInt16(buffer.Array, buffer.Offset + offset);
@@ -133,7 +137,12 @@ namespace ServerCore
             Buffer.BlockCopy(BitConverter.GetBytes(data), 0, buffer.Array, buffer.Offset + offset, num);
             return num;
         }
-
+        public static ushort AppendLongData(long data, ArraySegment<byte> buffer, int offset)
+        {
+            ushort num = 8;
+            Buffer.BlockCopy(BitConverter.GetBytes(data), 0, buffer.Array, buffer.Offset + offset, num);
+            return num;
+        }
         public static ushort AppendStringData(string data, ArraySegment<byte> buffer, int offset)
         {
             ushort num = 2;

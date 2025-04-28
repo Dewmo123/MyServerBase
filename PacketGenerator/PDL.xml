@@ -8,7 +8,12 @@
 		<float name="y"/>
 		<float name="z"/>
 	</dataPacket>
-
+	<dataPacket name ="QuaternionPacket">
+		<float name="x"/>
+		<float name="y"/>
+		<float name="z"/>
+		<float name="w"/>
+	</dataPacket>
 	<dataPacket name="RoomInfoPacket">
 		<int name ="roomId"/>
 		<int name ="maxCount"/>
@@ -18,45 +23,66 @@
 
 	<dataPacket name="PlayerInfoPacket">
 		<int name="index"/>
+		<int name="animHash"/>
 		<bool name="isAiming"/>
 		<VectorPacket name="position"/>
-		<VectorPacket name="direction"/>
+		<QuaternionPacket name="rotation"/>
 		<VectorPacket name="mouse"/>
+	</dataPacket>
+	
+	<dataPacket name="SnapshotPacket">
+		<int name="index"/>
+		<int name="animHash"/>
+		<long name="timestamp"/>
+		<VectorPacket name="position"/>
+		<QuaternionPacket name="rotation"/>
 	</dataPacket>
 	
 	<packet name="C_RoomEnter">
 		<int name ="roomId"/>
 	</packet>
+	
 	<packet name="S_RoomEnter">
 		<PlayerInfoPacket name="newPlayer"/>
 	</packet>
+	
 	<packet name="C_RoomExit">
 	</packet>
+	
 	<packet name="S_RoomExit">
 		<int name="Index"/>
 	</packet>
+	
 	<packet name="C_CreateRoom">
 		<string name="roomName"/>
 	</packet>
+	
 	<packet name ="S_RoomList">
 		<list name ="roomInfos">
 			<roomInfoPacket name ="att"/>
 		</list>
 	</packet>
+	
 	<packet name ="C_RoomList">
 	</packet>
+	
 	<packet name="S_TestText">
 		<string name="text"/>
 	</packet>
+	
 	<packet name ="S_EnterRoomFirst">
 		<int name="myIndex"/>
 		<list name="playerInfos">
 			<playerInfoPacket name="att"/>
 		</list>
 	</packet>
+	
 	<packet name="S_UpdateInfos">
 		<list name="playerInfos">
 			<playerInfoPacket name="att"/>
+		</list>
+		<list name="snapshots">
+			<snapshotPacket name="att"/>
 		</list>
 	</packet>
 	<packet name="C_UpdateInfo">

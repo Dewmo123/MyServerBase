@@ -44,4 +44,9 @@ class PacketHandler
             Console.WriteLine($"{item.index}");
         }
     }
+
+    internal static void S_UpdateSnapshotHandler(PacketSession session, IPacket packet)
+    {
+        throw new NotImplementedException();
+    }
 }

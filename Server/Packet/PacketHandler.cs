@@ -4,6 +4,7 @@ using ServerCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 class PacketHandler
 {
@@ -21,6 +22,7 @@ class PacketHandler
         var enterPacket = packet as C_RoomEnter;
         var clientSession = session as ClientSession;
         EnterRoomProcess(enterPacket.roomId, clientSession);
+        Console.WriteLine("EnterRoom");
     }
 
     private static void EnterRoomProcess(int roomId, ClientSession clientSession)
@@ -31,14 +33,22 @@ class PacketHandler
         clientSession.myInfo = new PlayerInfoPacket()
         {
             isAiming = false,
-            direction = new VectorPacket(),
             position = new VectorPacket(),
+            rotation = new QuaternionPacket(),
             mouse = new VectorPacket(),
+            animHash = 0,
             index = clientSession.SessionId
         };
-        _roomManager.EnterRoom(clientSession, roomId);
-        room.SendAllPlayerInfosFirst(clientSession.SessionId);
-        room.Push(() => room.Broadcast(new S_RoomEnter() { newPlayer = clientSession.myInfo }));
+        if (_roomManager.EnterRoom(clientSession, roomId))
+        {
+            room.FirstEnterProcess(clientSession.SessionId);
+            Thread.Sleep(100);
+            room.Push(() =>
+            {
+                room.Broadcast(new S_RoomEnter() { newPlayer = clientSession.myInfo });
+                Console.WriteLine("Broadcast");
+            });
+        }
     }
 
     internal static void C_RoomExitHandler(PacketSession session, IPacket packet)
@@ -64,6 +74,5 @@ class PacketHandler
         var clientSession = session as ClientSession;
         var playerPacket = packet as C_UpdateInfo;
         clientSession.myInfo = playerPacket.playerInfo;
-        Console.WriteLine($"({playerPacket.playerInfo.position.x},{playerPacket.playerInfo.position.y},{playerPacket.playerInfo.position.z})");
     }
 }

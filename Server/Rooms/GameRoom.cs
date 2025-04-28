@@ -12,7 +12,7 @@ namespace Server.Rooms
         public int RoomId { get; private set; } = 0;
         public bool CanAddPlayer => SessionCount < MaxSessionCount;
         public string RoomName { get; private set; }
-        public GameRoom(RoomManager roomManager,string name,int roomId)
+        public GameRoom(RoomManager roomManager, string name, int roomId)
         {
             RoomId = roomId;
             _roomManager = roomManager;
@@ -21,7 +21,7 @@ namespace Server.Rooms
         public int MaxSessionCount { get; private set; } = 15;//임의
         public int SessionCount => _sessions.Count;
 
-        Dictionary<int,ClientSession> _sessions = new Dictionary<int, ClientSession>();
+        Dictionary<int, ClientSession> _sessions = new Dictionary<int, ClientSession>();
         JobQueue _jobQueue = new JobQueue();
         List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
         public void Push(Action job)
@@ -32,7 +32,8 @@ namespace Server.Rooms
         public void Flush()
         {
             // N ^ 2
-            //Console.WriteLine("Flush");
+            if (_pendingList.Count == 0)
+                return;
             foreach (ClientSession s in _sessions.Values)
                 s.Send(_pendingList);
 
@@ -46,7 +47,7 @@ namespace Server.Rooms
         }
         public void Enter(ClientSession session)
         {
-            _sessions.Add(session.SessionId,session);
+            _sessions.Add(session.SessionId, session);
             session.Room = this;
         }
 
@@ -58,7 +59,7 @@ namespace Server.Rooms
                 _roomManager.RemoveRoom(RoomId);
             }
         }
-        public void SendAllPlayerInfosFirst(int sessionId)
+        public void FirstEnterProcess(int sessionId)
         {
             S_EnterRoomFirst players = new();
             players.playerInfos = new List<PlayerInfoPacket>();
@@ -68,12 +69,7 @@ namespace Server.Rooms
                 players.myIndex = sessionId;
                 foreach (var player in _sessions)
                 {
-                    players.playerInfos.Add(new PlayerInfoPacket()
-                    {
-                        index = player.Key,
-                        direction = player.Value.myInfo.direction,
-                        position = player.Value.myInfo.position
-                    });
+                    players.playerInfos.Add(player.Value.myInfo);
                 }
                 _sessions[sessionId].Send(players.Serialize());
             });
@@ -82,15 +78,18 @@ namespace Server.Rooms
         {
             S_UpdateInfos updates = new();
             updates.playerInfos = new List<PlayerInfoPacket>();
-            foreach(var player in _sessions)
+            updates.snapshots = new List<SnapshotPacket>();
+            foreach (var player in _sessions)
             {
-                updates.playerInfos.Add(new PlayerInfoPacket()
+                PlayerInfoPacket info = player.Value.myInfo;
+                updates.playerInfos.Add(info);
+                updates.snapshots.Add(new SnapshotPacket()
                 {
                     index = player.Key,
-                    isAiming = player.Value.myInfo.isAiming,
-                    mouse = player.Value.myInfo.mouse,
-                    direction = player.Value.myInfo.direction,
-                    position = player.Value.myInfo.position
+                    position = info.position,
+                    rotation = info.rotation,
+                    animHash = info.animHash,
+                    timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                 });
             }
             Broadcast(updates);

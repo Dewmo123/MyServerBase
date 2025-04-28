@@ -11,16 +11,26 @@ namespace Server.Rooms
         private Dictionary<int, GameRoom> _rooms = new Dictionary<int, GameRoom>();
         private ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
         private int _roomIdGenerator = 0;
+        public void UpdateRooms()
+        {
+            try
+            {
+                _rwLock.EnterReadLock();
+                foreach (var room in _rooms.Values)
+                    room.Push(() => room.UpdateRoom());
+            }
+            finally
+            {
+                _rwLock.ExitReadLock();
+            }
+        }
         public void FlushRooms()
         {
             try
             {
                 _rwLock.EnterReadLock();
                 foreach (var room in _rooms.Values)
-                {
-                    room.Push(() => room.UpdateRoom());
                     room.Push(() => room.Flush());
-                }
             }
             finally
             {
