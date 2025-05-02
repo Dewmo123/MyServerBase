@@ -33,7 +33,7 @@ class PacketHandler
         clientSession.myInfo = new PlayerInfoPacket()
         {
             isAiming = false,
-            position = new VectorPacket(),
+            position = new VectorPacket() { x = -1.76f, y = 0, z = -19.13f },
             rotation = new QuaternionPacket(),
             mouse = new VectorPacket(),
             animHash = 0,

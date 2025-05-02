@@ -72,7 +72,7 @@ namespace ServerCore
         public void Start(Socket socket)
         {
             _socket = socket;
-
+            _socket.NoDelay = true;
             _recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
             _sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
 

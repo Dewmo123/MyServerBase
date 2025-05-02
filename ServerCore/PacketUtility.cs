@@ -50,7 +50,7 @@ namespace ServerCore
         }
         public static ushort ReadLongData(ArraySegment<byte> buffer, int offset, out long result)
         {
-            result = BitConverter.ToInt32(buffer.Array, buffer.Offset + offset);
+            result = BitConverter.ToInt64(buffer.Array, buffer.Offset + offset);
             return 8;
         }
         public static ushort ReadUshortData(ArraySegment<byte> buffer, int offset, out ushort result)

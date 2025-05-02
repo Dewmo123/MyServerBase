@@ -91,6 +91,7 @@ namespace Server.Rooms
                     animHash = info.animHash,
                     timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                 });
+                //Console.WriteLine(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
             }
             Broadcast(updates);
         }
