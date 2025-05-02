@@ -24,36 +24,29 @@ namespace Server
             Console.WriteLine("Listening...");
             roomManager.GenerateRoom("ASDASD");
             InitFlushTimer();
-            InitUpdateTimer();
+            //InitUpdateTimer();
             while (true) { }
             //FlushRoom();
         }
-        private static void InitUpdateTimer()
-        {
-            Timer updateTimer = new Timer(50);
-            updateTimer.Elapsed += UpdateRooms;
-            updateTimer.Enabled = true;
-            updateTimer.AutoReset = true;
-        }
+        //private static void InitUpdateTimer()
+        //{
+        //    Timer updateTimer = new Timer(30);
+        //    updateTimer.Enabled = true;
+        //    updateTimer.AutoReset = true;
+        //}
         private static void InitFlushTimer()
         {
-            Timer flushTimer = new Timer(25);
-            flushTimer.Elapsed += FlushRooms;
+            Timer flushTimer = new Timer(10);
+            flushTimer.Elapsed += UpdateLoop;
             flushTimer.Enabled = true;
             flushTimer.AutoReset = true;
         }
 
-        private static void UpdateRooms(object sender, ElapsedEventArgs e)
+        private static void UpdateLoop(object sender, ElapsedEventArgs e)
         {
             roomManager.UpdateRooms();
-            //Console.WriteLine($"Update: {DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}");
-        }
-
-
-        private static void FlushRooms(object sender, ElapsedEventArgs e)
-        {
             roomManager.FlushRooms();
-            //Console.WriteLine($"Flush: {DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}");
+            //Console.WriteLine($"Update: {DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}");
         }
     }
 }
