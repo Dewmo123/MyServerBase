@@ -14,7 +14,7 @@ namespace Server
 	{
 		public int SessionId { get; set; }
 		public GameRoom Room { get; set; }
-		public PlayerInfoPacket myInfo { get; set; }
+		public LocationInfoPacket location { get; set; }
 
 		#region Callback
 		public override void OnConnected(EndPoint endPoint)

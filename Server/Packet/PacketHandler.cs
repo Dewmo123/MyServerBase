@@ -32,7 +32,7 @@ class PacketHandler
         var room = _roomManager.GetRoomById(roomId);
         if (room == default)
             throw new NullReferenceException();
-        clientSession.myInfo = new PlayerInfoPacket()
+        clientSession.location = new LocationInfoPacket()
         {
             isAiming = false,
             position = new VectorPacket() { x = -1.76f, y = 0, z = -19.13f },
@@ -46,7 +46,7 @@ class PacketHandler
             room.Push(() =>
             {
                 room.FirstEnterProcess(clientSession.SessionId);
-                room.Broadcast(new S_RoomEnter() { newPlayer = clientSession.myInfo });
+                room.Broadcast(new S_RoomEnter() { newPlayer = clientSession.location });
                 Console.WriteLine("Broadcast");
             });
         }
@@ -69,10 +69,10 @@ class PacketHandler
         clientSession.Send(roomList.Serialize());
     }
 
-    internal static void C_UpdateInfoHandler(PacketSession session, IPacket packet)
+    internal static void C_UpdateLocationHandler(PacketSession session, IPacket packet)
     {
         var clientSession = session as ClientSession;
-        var playerPacket = packet as C_UpdateInfo;
-        clientSession.myInfo = playerPacket.playerInfo;
+        var playerPacket = packet as C_UpdateLocation;
+        clientSession.location = playerPacket.location;
     }
 }

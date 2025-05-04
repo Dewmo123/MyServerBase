@@ -17,7 +17,7 @@ namespace Server.Rooms
     {
         private RoomManager _roomManager;
         public int RoomId { get; private set; } = 0;
-        public bool CanAddPlayer => SessionCount < MaxSessionCount;
+        public bool CanAddPlayer => SessionCount < MaxSessionCount && _stateMachine.CurrentState == "Lobby";
         public string RoomName { get; private set; }
         private RoomStateMachine _stateMachine;
         public GameRoom(RoomManager roomManager, string name, int roomId)
@@ -26,7 +26,7 @@ namespace Server.Rooms
             _roomManager = roomManager;
             RoomName = name;
             _stateMachine = new RoomStateMachine(this);
-            _stateMachine.ChangeState("Lobby");
+            ChangeState("Lobby");
         }
         #region Network
         public int MaxSessionCount { get; private set; } = 15;//임의
@@ -77,25 +77,26 @@ namespace Server.Rooms
         public void FirstEnterProcess(int sessionId)
         {
             S_EnterRoomFirst players = new();
-            players.playerInfos = new List<PlayerInfoPacket>();
+            players.playerInfos = new List<LocationInfoPacket>();
             Console.WriteLine("SendAllPlayer");
             players.myIndex = sessionId;
             foreach (var player in _sessions)
             {
-                players.playerInfos.Add(player.Value.myInfo);
+                players.playerInfos.Add(player.Value.location);
             }
             _sessions[sessionId].Send(players.Serialize());
         }
-        private List<PlayerInfoPacket> _playerInfos = new();
+        private List<LocationInfoPacket> _playerInfos = new();
 
-        public List<PlayerInfoPacket> GetPlayerInfos()
+        public List<LocationInfoPacket> GetPlayerInfos()
         {
             _playerInfos.Clear();
             foreach (var session in _sessions.Values)
-                _playerInfos.Add(session.myInfo);
+                _playerInfos.Add(session.location);
             return _playerInfos;
         }
-
+        public List<int> GetSessionKeys()
+            => _sessions.Keys.ToList();
         public void ChangeState(string name)
             => _stateMachine.ChangeState(name);
         public void UpdateRoom()

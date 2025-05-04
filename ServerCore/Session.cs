@@ -17,24 +17,24 @@ namespace ServerCore
             int processLen = 0;
             int packetCount = 0;
 
-            // 최소한 헤더는 파싱할 수 있는지 확인
-            if (buffer.Count < HeaderSize)
-                return 0 ;
+            while (true)
+            {
+                // 최소한 헤더는 파싱할 수 있는지 확인
+                if (buffer.Count < HeaderSize)
+                    break;
 
-            // 패킷이 완전체로 도착했는지 확인
-            ushort dataSize = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
-            if (buffer.Count < dataSize)
-                return 0;
+                // 패킷이 완전체로 도착했는지 확인
+                ushort dataSize = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+                if (buffer.Count < dataSize)
+                    break;
 
-            // 여기까지 왔으면 패킷 조립 가능
-            OnRecvPacket(new ArraySegment<byte>(buffer.Array, buffer.Offset, dataSize));
-            packetCount++;
+                // 여기까지 왔으면 패킷 조립 가능
+                OnRecvPacket(new ArraySegment<byte>(buffer.Array, buffer.Offset, dataSize));
+                packetCount++;
 
-            processLen += dataSize;
-            buffer = new ArraySegment<byte>(buffer.Array, buffer.Offset + dataSize, buffer.Count - dataSize);
-
-            if (packetCount > 1)
-                Console.WriteLine($"패킷 모아보내기 : {packetCount}");
+                processLen += dataSize;
+                buffer = new ArraySegment<byte>(buffer.Array, buffer.Offset + dataSize, buffer.Count - dataSize);
+            }
 
             return processLen;
         }

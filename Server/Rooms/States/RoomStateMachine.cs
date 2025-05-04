@@ -9,6 +9,7 @@ namespace Server.Rooms.States
     {
         private Dictionary<string, GameRoomState> _states;
         private GameRoomState _currentState;
+        public string CurrentState { get; private set; }
         public RoomStateMachine(GameRoom room)
         {
             _states = new Dictionary<string, GameRoomState>();
@@ -25,6 +26,7 @@ namespace Server.Rooms.States
             if (_states.TryGetValue(name, out GameRoomState state))
             {
                 _currentState?.Exit();
+                CurrentState = name;
                 _currentState = state;
                 state.Enter();
             }

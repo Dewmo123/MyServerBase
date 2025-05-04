@@ -41,7 +41,6 @@ class PacketHandler
         var p = packet as S_UpdateInfos;
         foreach(var item in p.playerInfos)
         {
-            Console.WriteLine($"{item.index}");
         }
     }
 

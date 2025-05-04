@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <!--가독성을 위해 dataPacket을 제일 위부터 쓰기!!-->
 <PDL>
-
 	<dataPacket name ="VectorPacket">
 		<float name="x"/>
 		<float name="y"/>
@@ -20,7 +19,7 @@
 		<string name="roomName"/>
 	</dataPacket>
 
-	<dataPacket name="PlayerInfoPacket">
+	<dataPacket name="LocationInfoPacket">
 		<int name="index"/>
 		<int name="animHash"/>
 		<bool name="isAiming"/>
@@ -42,7 +41,7 @@
 	</packet>
 	
 	<packet name="S_RoomEnter">
-		<PlayerInfoPacket name="newPlayer"/>
+		<LocationInfoPacket name="newPlayer"/>
 	</packet>
 	
 	<packet name="C_RoomExit">
@@ -72,19 +71,19 @@
 	<packet name ="S_EnterRoomFirst">
 		<int name="myIndex"/>
 		<list name="playerInfos">
-			<playerInfoPacket name="att"/>
+			<locationInfoPacket name="att"/>
 		</list>
 	</packet>
 	
 	<packet name="S_UpdateInfos">
 		<list name="playerInfos">
-			<playerInfoPacket name="att"/>
+			<locationInfoPacket name="att"/>
 		</list>
 		<list name="snapshots">
 			<snapshotPacket name="att"/>
 		</list>
 	</packet>
-	<packet name="C_UpdateInfo">
-		<PlayerInfoPacket name="playerInfo"/>
+	<packet name="C_UpdateLocation">
+		<LocationInfoPacket name="location"/>
 	</packet>
 </PDL>
