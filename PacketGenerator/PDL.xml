@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <!--가독성을 위해 dataPacket을 제일 위부터 쓰기!!-->
-<!--List는 밑에 하나의 원소만 존재&원소의 이름은 무시-->
 <PDL>
 
 	<dataPacket name ="VectorPacket">

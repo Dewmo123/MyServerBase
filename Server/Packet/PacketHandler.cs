@@ -43,10 +43,9 @@ class PacketHandler
         };
         if (_roomManager.EnterRoom(clientSession, roomId))
         {
-            room.FirstEnterProcess(clientSession.SessionId);
-            Thread.Sleep(100);
             room.Push(() =>
             {
+                room.FirstEnterProcess(clientSession.SessionId);
                 room.Broadcast(new S_RoomEnter() { newPlayer = clientSession.myInfo });
                 Console.WriteLine("Broadcast");
             });
