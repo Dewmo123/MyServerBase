@@ -58,6 +58,10 @@ namespace Server.Rooms
             {
                 _roomManager.RemoveRoom(RoomId);
             }
+            else
+            {
+                Broadcast(new S_RoomExit() { Index = sessionId });
+            }
         }
         public void FirstEnterProcess(int sessionId)
         {

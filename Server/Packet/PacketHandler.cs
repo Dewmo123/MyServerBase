@@ -21,6 +21,8 @@ class PacketHandler
     {
         var enterPacket = packet as C_RoomEnter;
         var clientSession = session as ClientSession;
+        if (clientSession.Room != null)
+            return;
         EnterRoomProcess(enterPacket.roomId, clientSession);
         Console.WriteLine("EnterRoom");
     }
@@ -56,7 +58,6 @@ class PacketHandler
         var clientSession = session as ClientSession;
         var room = clientSession.Room;
         room.Push(() => room.Leave(clientSession.SessionId));
-        room.Push(() => room.Broadcast(new S_RoomExit() { Index = clientSession.SessionId }));
         Console.WriteLine($"Leave Room: {clientSession.SessionId}");
     }
 
