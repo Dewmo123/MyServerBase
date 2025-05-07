@@ -17,6 +17,7 @@ public enum PacketID
 	S_EnterRoomFirst = 9,
 	S_UpdateInfos = 10,
 	C_UpdateLocation = 11,
+	S_TeamInfos = 12,
 	
 }
 
@@ -162,6 +163,28 @@ public class SnapshotPacket : IDataPacket
 		count += PacketUtility.AppendLongData(this.timestamp, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.position, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.rotation, segment, count);
+		return (ushort)(count - offset);
+	}
+}
+
+public class TeamInfoPacket : IDataPacket
+{
+	public int index;
+	public ushort team;
+
+	public ushort Deserialize(ArraySegment<byte> segment, int offset)
+	{
+		ushort count = (ushort)offset;
+		count += PacketUtility.ReadIntData(segment, count, out index);
+		count += PacketUtility.ReadUshortData(segment, count, out team);
+		return (ushort)(count - offset);
+	}
+
+	public ushort Serialize(ArraySegment<byte> segment, int offset)
+	{
+		ushort count = (ushort)offset;
+		count += PacketUtility.AppendIntData(this.index, segment, count);
+		count += PacketUtility.AppendUshortData(this.team, segment, count);
 		return (ushort)(count - offset);
 	}
 }
@@ -475,6 +498,34 @@ public class C_UpdateLocation : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.location, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
+		return SendBufferHelper.Close(count);
+	}
+}
+
+public class S_TeamInfos : IPacket
+{
+	public List<TeamInfoPacket> teamInfos;
+
+	public ushort Protocol { get { return (ushort)PacketID.S_TeamInfos; } }
+
+	public void Deserialize(ArraySegment<byte> segment)
+	{
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += sizeof(ushort);
+		count += PacketUtility.ReadListData(segment, count, out teamInfos);
+	}
+
+	public ArraySegment<byte> Serialize()
+	{
+		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
+		count += PacketUtility.AppendListData(this.teamInfos, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}

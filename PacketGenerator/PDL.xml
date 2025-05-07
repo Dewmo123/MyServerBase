@@ -6,12 +6,14 @@
 		<float name="y"/>
 		<float name="z"/>
 	</dataPacket>
+	
 	<dataPacket name ="QuaternionPacket">
 		<float name="x"/>
 		<float name="y"/>
 		<float name="z"/>
 		<float name="w"/>
 	</dataPacket>
+	
 	<dataPacket name="RoomInfoPacket">
 		<int name ="roomId"/>
 		<int name ="maxCount"/>
@@ -34,6 +36,11 @@
 		<long name="timestamp"/>
 		<VectorPacket name="position"/>
 		<QuaternionPacket name="rotation"/>
+	</dataPacket>
+
+	<dataPacket name ="TeamInfoPacket">
+		<int name="index"/>
+		<ushort name="team"/>
 	</dataPacket>
 	
 	<packet name="C_RoomEnter">
@@ -85,5 +92,10 @@
 	</packet>
 	<packet name="C_UpdateLocation">
 		<LocationInfoPacket name="location"/>
+	</packet>
+	<packet name="S_TeamInfos">
+		<list name="teamInfos">
+			<teamInfoPacket name="att"/>
+		</list>
 	</packet>
 </PDL>

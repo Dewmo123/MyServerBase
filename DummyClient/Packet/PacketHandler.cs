@@ -15,7 +15,7 @@ class PacketHandler
     internal static void S_RoomEnterHandler(PacketSession session, IPacket packet)
     {
         var roomEnter = packet as S_RoomEnter;
-        Console.WriteLine($"newPlayer: {roomEnter.newPlayer.index}");
+        //Console.WriteLine($"newPlayer: {roomEnter.newPlayer.index}");
     }
 
     internal static void S_RoomExitHandler(PacketSession session, IPacket packet)
@@ -29,6 +29,11 @@ class PacketHandler
         {
             Console.WriteLine($"{item.roomId}: {item.currentCount} / {item.maxCount}");
         }
+    }
+
+    internal static void S_TeamInfosHandler(PacketSession session, IPacket packet)
+    {
+        Console.WriteLine("ASD");
     }
 
     internal static void S_TestTextHandler(PacketSession session, IPacket packet)

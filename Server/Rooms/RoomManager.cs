@@ -37,23 +37,9 @@ namespace Server.Rooms
                 _rwLock.ExitReadLock();
             }
         }
-        public bool EnterRoom(ClientSession session, int roomId)
+        public void EnterRoom(ClientSession session, int roomId)
         {
-            try
-            {
-                _rwLock.EnterReadLock();
-                if (_rooms.TryGetValue(roomId, out GameRoom room))
-                    if (room.CanAddPlayer)
-                    {
-                        room.Push(() => room.Enter(session));
-                        return true;
-                    }
-                return false;
-            }
-            finally
-            {
-                _rwLock.ExitReadLock();
-            }
+
         }
         public void RemoveRoom(int roomId)
         {

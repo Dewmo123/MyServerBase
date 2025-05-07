@@ -31,6 +31,8 @@ class PacketManager
 		_handler.Add((ushort)PacketID.S_EnterRoomFirst, PacketHandler.S_EnterRoomFirstHandler);
 		_onRecv.Add((ushort)PacketID.S_UpdateInfos, MakePacket<S_UpdateInfos>);
 		_handler.Add((ushort)PacketID.S_UpdateInfos, PacketHandler.S_UpdateInfosHandler);
+		_onRecv.Add((ushort)PacketID.S_TeamInfos, MakePacket<S_TeamInfos>);
+		_handler.Add((ushort)PacketID.S_TeamInfos, PacketHandler.S_TeamInfosHandler);
 
 	}
 

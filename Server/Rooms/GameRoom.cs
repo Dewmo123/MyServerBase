@@ -13,11 +13,17 @@ namespace Server.Rooms
     //플레이어 대기 상태 - Enter: 딱히 할게 없어보임. Update: 뭐 플레이어 팀정하기? 아바타 동기화, Exit: 딱히 할게없어보임
     //라운드 준비 상태 - Enter: 팀별로 시작지점 보내기, Update: 라운드 시작까지 남은시간 계산, 위치 동기화, Exit: 딱히 없지않나
     //게임 중 상태 - Enter: 없어보임, Update: 공격 패킷, 위치 동기화, 플레이어 카운트 세기, Exit: 없어보임
+    public enum Team
+    {
+        Red,
+        Blue
+    }
     class GameRoom : IJobQueue
     {
         private RoomManager _roomManager;
         public int RoomId { get; private set; } = 0;
         public bool CanAddPlayer => SessionCount < MaxSessionCount && _stateMachine.CurrentState == "Lobby";
+        public Dictionary<Team  , List<int>> teams;
         public string RoomName { get; private set; }
         private RoomStateMachine _stateMachine;
         public GameRoom(RoomManager roomManager, string name, int roomId)
@@ -26,10 +32,16 @@ namespace Server.Rooms
             _roomManager = roomManager;
             RoomName = name;
             _stateMachine = new RoomStateMachine(this);
+            teams = new Dictionary<Team, List<int>>();
+            foreach(var item in Enum.GetValues(typeof(Team)))
+            {
+                teams.Add((Team)item, new List<int>());
+                Console.WriteLine(item);
+            }
             ChangeState("Lobby");
         }
         #region Network
-        public int MaxSessionCount { get; private set; } = 15;//임의
+        public int MaxSessionCount { get; private set; } = 14;//임의
         public int SessionCount => _sessions.Count;
 
         private Dictionary<int, ClientSession> _sessions = new Dictionary<int, ClientSession>();
@@ -74,17 +86,17 @@ namespace Server.Rooms
                 Broadcast(new S_RoomExit() { Index = sessionId });
             }
         }
-        public void FirstEnterProcess(int sessionId)
+        public void FirstEnterProcess(ClientSession session)
         {
             S_EnterRoomFirst players = new();
             players.playerInfos = new List<LocationInfoPacket>();
             Console.WriteLine("SendAllPlayer");
-            players.myIndex = sessionId;
+            players.myIndex = session.SessionId;
             foreach (var player in _sessions)
             {
                 players.playerInfos.Add(player.Value.location);
             }
-            _sessions[sessionId].Send(players.Serialize());
+            session.Send(players.Serialize());
         }
         private List<LocationInfoPacket> _playerInfos = new();
 

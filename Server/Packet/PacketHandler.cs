@@ -41,11 +41,12 @@ class PacketHandler
             animHash = 0,
             index = clientSession.SessionId
         };
-        if (_roomManager.EnterRoom(clientSession, roomId))
+        if (room.CanAddPlayer)
         {
             room.Push(() =>
             {
-                room.FirstEnterProcess(clientSession.SessionId);
+                room.Enter(clientSession);
+                room.FirstEnterProcess(clientSession);
                 room.Broadcast(new S_RoomEnter() { newPlayer = clientSession.location });
                 Console.WriteLine("Broadcast");
             });

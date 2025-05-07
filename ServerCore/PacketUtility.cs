@@ -78,14 +78,10 @@ namespace ServerCore
 
         public static ushort ReadStringData(ArraySegment<byte> buffer, int offset, out string result)
         {
-            ushort num = 0;
-            ushort num2 = BitConverter.ToUInt16(buffer.Array, buffer.Offset + offset);
-            num2 -= 2;
-            num += 2;
-            result = Encoding.Unicode.GetString(buffer.Array, buffer.Offset + offset + num, num2);
-            return (ushort)(num + num2);
+            ushort length = BitConverter.ToUInt16(buffer.Array, buffer.Offset + offset);
+            result = Encoding.Unicode.GetString(buffer.Array, buffer.Offset + offset + 2, length);
+            return (ushort)(2 + length);
         }
-
         public static ushort AppendListData<T>(List<T> data, ArraySegment<byte> buffer, int offset) where T : IDataPacket, new()
         {
             ushort num = 0;
@@ -145,10 +141,14 @@ namespace ServerCore
         }
         public static ushort AppendStringData(string data, ArraySegment<byte> buffer, int offset)
         {
-            ushort num = 2;
-            num += (ushort)Encoding.Unicode.GetBytes(data, 0, data.Length, buffer.Array, buffer.Offset + offset + num);
-            Buffer.BlockCopy(BitConverter.GetBytes(num), 0, buffer.Array, buffer.Offset + offset, 2);
-            return num;
+            var stringBytes = Encoding.Unicode.GetBytes(data);
+            ushort length = (ushort)stringBytes.Length;
+
+            Buffer.BlockCopy(BitConverter.GetBytes(length), 0, buffer.Array, buffer.Offset + offset, 2);
+            Buffer.BlockCopy(stringBytes, 0, buffer.Array, buffer.Offset + offset + 2, length);
+
+            return (ushort)(2 + length);
         }
+
     }
 }
