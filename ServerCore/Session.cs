@@ -10,7 +10,6 @@ namespace ServerCore
     public abstract class PacketSession : Session
     {
         public static readonly int HeaderSize = 2;
-
         // [size(2)][packetId(2)][ ... ][size(2)][packetId(2)][ ... ]
         public sealed override int OnRecv(ArraySegment<byte> buffer)
         {

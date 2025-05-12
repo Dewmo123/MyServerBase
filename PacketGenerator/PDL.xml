@@ -37,10 +37,17 @@
 		<VectorPacket name="position"/>
 		<QuaternionPacket name="rotation"/>
 	</dataPacket>
-
+	
 	<dataPacket name ="TeamInfoPacket">
 		<int name="index"/>
 		<ushort name="team"/>
+	</dataPacket>
+
+	<dataPacket name="AttackInfoBr">
+		<int name="hitPlayerIndex"/>
+		<int name="attackerIndex"/>
+		<VectorPacket name="firePos"/>
+		<VectorPacket name="direction"/>
 	</dataPacket>
 	
 	<packet name="C_RoomEnter">
@@ -89,6 +96,9 @@
 		<list name="snapshots">
 			<snapshotPacket name="att"/>
 		</list>
+		<list name="attacks">
+			<attackInfoBr name="att"/>
+		</list>
 	</packet>
 	<packet name="C_UpdateLocation">
 		<LocationInfoPacket name="location"/>
@@ -97,5 +107,10 @@
 		<list name="teamInfos">
 			<teamInfoPacket name="att"/>
 		</list>
+	</packet>
+	<packet name="C_ShootReq">
+		<int name="hitPlayerIndex"/>
+		<VectorPacket name="firePos"/>
+		<VectorPacket name="direction"/>
 	</packet>
 </PDL>

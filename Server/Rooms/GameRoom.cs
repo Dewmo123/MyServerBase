@@ -23,7 +23,7 @@ namespace Server.Rooms
         private RoomManager _roomManager;
         public int RoomId { get; private set; } = 0;
         public bool CanAddPlayer => SessionCount < MaxSessionCount && _stateMachine.CurrentState == "Lobby";
-        public Dictionary<Team  , List<int>> teams;
+        public Dictionary<Team, List<int>> teams;
         public string RoomName { get; private set; }
         private RoomStateMachine _stateMachine;
         public GameRoom(RoomManager roomManager, string name, int roomId)
@@ -33,10 +33,9 @@ namespace Server.Rooms
             RoomName = name;
             _stateMachine = new RoomStateMachine(this);
             teams = new Dictionary<Team, List<int>>();
-            foreach(var item in Enum.GetValues(typeof(Team)))
+            foreach (var item in Enum.GetValues(typeof(Team)))
             {
                 teams.Add((Team)item, new List<int>());
-                Console.WriteLine(item);
             }
             ChangeState("Lobby");
         }
@@ -68,7 +67,6 @@ namespace Server.Rooms
         {
             _pendingList.Add(packet.Serialize());
         }
-        #endregion
         public void Enter(ClientSession session)
         {
             _sessions.Add(session.SessionId, session);
@@ -86,6 +84,8 @@ namespace Server.Rooms
                 Broadcast(new S_RoomExit() { Index = sessionId });
             }
         }
+        #endregion
+
         public void FirstEnterProcess(ClientSession session)
         {
             S_EnterRoomFirst players = new();
@@ -98,8 +98,25 @@ namespace Server.Rooms
             }
             session.Send(players.Serialize());
         }
-        private List<LocationInfoPacket> _playerInfos = new();
-
+        private List<LocationInfoPacket> _playerInfos = new(15);
+        private List<AttackInfoBr> _attacks = new(15);
+        public void Attack(ClientSession session, C_ShootReq req)
+        {
+            //로직 처리는 나중에
+            _attacks.Add(new AttackInfoBr()
+            {
+                attackerIndex = session.SessionId,
+                direction = req.direction,
+                firePos = req.firePos,
+                hitPlayerIndex = req.hitPlayerIndex
+            });
+        }
+        public List<AttackInfoBr> GetAttacks()
+        {
+            List<AttackInfoBr> attacks = new List<AttackInfoBr>(_attacks);
+            _attacks.Clear();
+            return attacks;
+        }
         public List<LocationInfoPacket> GetPlayerInfos()
         {
             _playerInfos.Clear();
@@ -109,9 +126,11 @@ namespace Server.Rooms
         }
         public List<int> GetSessionKeys()
             => _sessions.Keys.ToList();
+        #region StateMachine
         public void ChangeState(string name)
             => _stateMachine.ChangeState(name);
         public void UpdateRoom()
             => _stateMachine.UpdateRoom();
+        #endregion
     }
 }

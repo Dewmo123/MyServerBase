@@ -9,14 +9,16 @@ namespace Server.Rooms.States
         private S_UpdateInfos updates = new();
         public PrepareState(GameRoom room) : base(room)
         {
-            updates.playerInfos = new List<LocationInfoPacket>();
-            updates.snapshots = new List<SnapshotPacket>();
+            updates.playerInfos = new List<LocationInfoPacket>(15);
+            updates.snapshots = new List<SnapshotPacket>(15);
+            updates.attacks = new List<AttackInfoBr>(15);
         }
         public override void Enter()
         {
             base.Enter();
             updates.playerInfos.Clear();
             updates.snapshots.Clear();
+            updates.attacks.Clear();
             var keys = _room.GetSessionKeys();
             foreach (int key in keys)
             {
@@ -34,8 +36,9 @@ namespace Server.Rooms.States
         public override void Update()
         {
             base.Update();
-            var infos = _room.GetPlayerInfos();
-            foreach (var info in infos)
+            var locations = _room.GetPlayerInfos();
+            var attacks = _room.GetAttacks();
+            foreach (var info in locations)
             {
                 updates.snapshots.Add(new SnapshotPacket()
                 {
@@ -47,7 +50,7 @@ namespace Server.Rooms.States
                 });
                 //Console.WriteLine(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
             }
-            Console.WriteLine(updates.playerInfos.Count);
+            updates.attacks = attacks;
             _room.Broadcast(updates);
             updates.playerInfos.Clear();
             updates.snapshots.Clear();

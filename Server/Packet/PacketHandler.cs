@@ -76,4 +76,13 @@ class PacketHandler
         var playerPacket = packet as C_UpdateLocation;
         clientSession.location = playerPacket.location;
     }
+
+    internal static void C_ShootReqHandler(PacketSession session, IPacket packet)
+    {
+        var clientSession = session as ClientSession;
+        var shootReq = packet as C_ShootReq;
+        if (clientSession.Room == null)
+            return;
+        clientSession.Room.Push(() => clientSession.Room.Attack(clientSession,shootReq));
+    }
 }

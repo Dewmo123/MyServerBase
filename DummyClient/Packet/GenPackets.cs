@@ -18,6 +18,7 @@ public enum PacketID
 	S_UpdateInfos = 10,
 	C_UpdateLocation = 11,
 	S_TeamInfos = 12,
+	C_ShootReq = 13,
 	
 }
 
@@ -185,6 +186,34 @@ public class TeamInfoPacket : IDataPacket
 		ushort count = (ushort)offset;
 		count += PacketUtility.AppendIntData(this.index, segment, count);
 		count += PacketUtility.AppendUshortData(this.team, segment, count);
+		return (ushort)(count - offset);
+	}
+}
+
+public class AttackInfoBr : IDataPacket
+{
+	public int hitPlayerIndex;
+	public int attackerIndex;
+	public VectorPacket firePos;
+	public VectorPacket direction;
+
+	public ushort Deserialize(ArraySegment<byte> segment, int offset)
+	{
+		ushort count = (ushort)offset;
+		count += PacketUtility.ReadIntData(segment, count, out hitPlayerIndex);
+		count += PacketUtility.ReadIntData(segment, count, out attackerIndex);
+		count += PacketUtility.ReadDataPacketData(segment, count, out firePos);
+		count += PacketUtility.ReadDataPacketData(segment, count, out direction);
+		return (ushort)(count - offset);
+	}
+
+	public ushort Serialize(ArraySegment<byte> segment, int offset)
+	{
+		ushort count = (ushort)offset;
+		count += PacketUtility.AppendIntData(this.hitPlayerIndex, segment, count);
+		count += PacketUtility.AppendIntData(this.attackerIndex, segment, count);
+		count += PacketUtility.AppendDataPacketData(this.firePos, segment, count);
+		count += PacketUtility.AppendDataPacketData(this.direction, segment, count);
 		return (ushort)(count - offset);
 	}
 }
@@ -448,6 +477,7 @@ public class S_UpdateInfos : IPacket
 {
 	public List<LocationInfoPacket> playerInfos;
 	public List<SnapshotPacket> snapshots;
+	public List<AttackInfoBr> attacks;
 
 	public ushort Protocol { get { return (ushort)PacketID.S_UpdateInfos; } }
 
@@ -459,6 +489,7 @@ public class S_UpdateInfos : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.ReadListData(segment, count, out playerInfos);
 		count += PacketUtility.ReadListData(segment, count, out snapshots);
+		count += PacketUtility.ReadListData(segment, count, out attacks);
 	}
 
 	public ArraySegment<byte> Serialize()
@@ -470,6 +501,7 @@ public class S_UpdateInfos : IPacket
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendListData(this.playerInfos, segment, count);
 		count += PacketUtility.AppendListData(this.snapshots, segment, count);
+		count += PacketUtility.AppendListData(this.attacks, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
@@ -526,6 +558,40 @@ public class S_TeamInfos : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendListData(this.teamInfos, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
+		return SendBufferHelper.Close(count);
+	}
+}
+
+public class C_ShootReq : IPacket
+{
+	public int hitPlayerIndex;
+	public VectorPacket firePos;
+	public VectorPacket direction;
+
+	public ushort Protocol { get { return (ushort)PacketID.C_ShootReq; } }
+
+	public void Deserialize(ArraySegment<byte> segment)
+	{
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += sizeof(ushort);
+		count += PacketUtility.ReadIntData(segment, count, out hitPlayerIndex);
+		count += PacketUtility.ReadDataPacketData(segment, count, out firePos);
+		count += PacketUtility.ReadDataPacketData(segment, count, out direction);
+	}
+
+	public ArraySegment<byte> Serialize()
+	{
+		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
+		count += PacketUtility.AppendIntData(this.hitPlayerIndex, segment, count);
+		count += PacketUtility.AppendDataPacketData(this.firePos, segment, count);
+		count += PacketUtility.AppendDataPacketData(this.direction, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}
