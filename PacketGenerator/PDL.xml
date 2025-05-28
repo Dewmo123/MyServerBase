@@ -20,22 +20,28 @@
 		<int name ="currentCount"/>
 		<string name="roomName"/>
 	</dataPacket>
-
+	
+	<dataPacket name="PlayerInfoPacket">
+		<int name="index"/>
+		<bool name="isAiming"/>
+		<int name="Health"/>
+	</dataPacket>
+	
 	<dataPacket name="LocationInfoPacket">
 		<int name="index"/>
 		<int name="animHash"/>
-		<bool name="isAiming"/>
 		<VectorPacket name="position"/>
 		<QuaternionPacket name="rotation"/>
-		<VectorPacket name="mouse"/>
+		<QuaternionPacket name="gunRotation"/>
 	</dataPacket>
-	
+
 	<dataPacket name="SnapshotPacket">
 		<int name="index"/>
 		<int name="animHash"/>
 		<long name="timestamp"/>
 		<VectorPacket name="position"/>
 		<QuaternionPacket name="rotation"/>
+		<QuaternionPacket name="gunRotation"/>
 	</dataPacket>
 	
 	<dataPacket name ="TeamInfoPacket">
@@ -46,6 +52,7 @@
 	<dataPacket name="AttackInfoBr">
 		<int name="hitPlayerIndex"/>
 		<int name="attackerIndex"/>
+		<int name="damage"/>
 		<VectorPacket name="firePos"/>
 		<VectorPacket name="direction"/>
 	</dataPacket>
@@ -84,14 +91,17 @@
 	
 	<packet name ="S_EnterRoomFirst">
 		<int name="myIndex"/>
-		<list name="playerInfos">
+		<list name="playerLocations">
 			<locationInfoPacket name="att"/>
 		</list>
+		<list name="playerInfos">
+			<playerInfoPacket name="att"/>
+		</list>
 	</packet>
-	
+
 	<packet name="S_UpdateInfos">
 		<list name="playerInfos">
-			<locationInfoPacket name="att"/>
+			<playerInfoPacket name="att"/>
 		</list>
 		<list name="snapshots">
 			<snapshotPacket name="att"/>
@@ -101,11 +111,17 @@
 		</list>
 	</packet>
 	<packet name="C_UpdateLocation">
+		<bool name="isAiming"/>
 		<LocationInfoPacket name="location"/>
 	</packet>
 	<packet name="S_TeamInfos">
 		<list name="teamInfos">
 			<teamInfoPacket name="att"/>
+		</list>
+	</packet>
+	<packet name="S_UpdateLocations">
+		<list name="locations">
+			<locationInfoPacket name="att"/>
 		</list>
 	</packet>
 	<packet name="C_ShootReq">

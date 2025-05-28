@@ -33,6 +33,8 @@ class PacketManager
 		_handler.Add((ushort)PacketID.S_UpdateInfos, PacketHandler.S_UpdateInfosHandler);
 		_onRecv.Add((ushort)PacketID.S_TeamInfos, MakePacket<S_TeamInfos>);
 		_handler.Add((ushort)PacketID.S_TeamInfos, PacketHandler.S_TeamInfosHandler);
+		_onRecv.Add((ushort)PacketID.S_UpdateLocations, MakePacket<S_UpdateLocations>);
+		_handler.Add((ushort)PacketID.S_UpdateLocations, PacketHandler.S_UpdateLocationsHandler);
 
 	}
 

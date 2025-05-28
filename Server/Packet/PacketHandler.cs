@@ -1,4 +1,5 @@
 ﻿using Server;
+using Server.Objects;
 using Server.Rooms;
 using ServerCore;
 using System;
@@ -29,26 +30,20 @@ class PacketHandler
 
     private static void EnterRoomProcess(int roomId, ClientSession clientSession)
     {
-        var room = _roomManager.GetRoomById(roomId);
+        var room = _roomManager.GetRoomById(roomId) as GameRoom;
         if (room == default)
             throw new NullReferenceException();
-        clientSession.location = new LocationInfoPacket()
-        {
-            isAiming = false,
-            position = new VectorPacket() { x = -1.76f, y = 0, z = -19.13f },
-            rotation = new QuaternionPacket(),
-            mouse = new VectorPacket(),
-            animHash = 0,
-            index = clientSession.SessionId
-        };
+        Player newPlayer = new Player();
         if (room.CanAddPlayer)
         {
             room.Push(() =>
             {
+                room.AddObject(newPlayer);
+                clientSession.PlayerId = newPlayer.index;
                 room.Enter(clientSession);
                 room.FirstEnterProcess(clientSession);
-                room.Broadcast(new S_RoomEnter() { newPlayer = clientSession.location });
-                Console.WriteLine("Broadcast");
+                LocationInfoPacket location = new() { index = newPlayer.index };
+                room.Broadcast(new S_RoomEnter() { newPlayer = location });
             });
         }
     }
@@ -57,7 +52,7 @@ class PacketHandler
     {
         var clientSession = session as ClientSession;
         var room = clientSession.Room;
-        room.Push(() => room.Leave(clientSession.SessionId));
+        room.Push(() => room.Leave(clientSession));
         Console.WriteLine($"Leave Room: {clientSession.SessionId}");
     }
 
@@ -74,7 +69,8 @@ class PacketHandler
     {
         var clientSession = session as ClientSession;
         var playerPacket = packet as C_UpdateLocation;
-        clientSession.location = playerPacket.location;
+        Player player = clientSession.Room.GetObject<Player>(clientSession.PlayerId);
+        player.HandlePacket(playerPacket);
     }
 
     internal static void C_ShootReqHandler(PacketSession session, IPacket packet)
@@ -83,6 +79,7 @@ class PacketHandler
         var shootReq = packet as C_ShootReq;
         if (clientSession.Room == null)
             return;
-        clientSession.Room.Push(() => clientSession.Room.Attack(clientSession,shootReq));
+        var room = clientSession.Room as GameRoom;
+        room.Push(() => room.Attack(clientSession, shootReq));
     }
 }

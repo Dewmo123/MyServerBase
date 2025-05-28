@@ -13,8 +13,8 @@ namespace Server
 	class ClientSession : PacketSession
 	{
 		public int SessionId { get; set; }
-		public GameRoom Room { get; set; }
-		public LocationInfoPacket location { get; set; }
+		public Room Room { get; set; }
+		public int PlayerId { get; set; }
 
 		#region Callback
 		public override void OnConnected(EndPoint endPoint)
@@ -33,7 +33,7 @@ namespace Server
 			SessionManager.Instance.Remove(this);
 			if (Room != null)
 			{
-				GameRoom room = Room;
+				Room room = Room;
 				room.Push(() => room.Leave(SessionId));
 				Room = null;
 			}

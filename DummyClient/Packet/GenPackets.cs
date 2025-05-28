@@ -18,11 +18,12 @@ public enum PacketID
 	S_UpdateInfos = 10,
 	C_UpdateLocation = 11,
 	S_TeamInfos = 12,
-	C_ShootReq = 13,
+	S_UpdateLocations = 13,
+	C_ShootReq = 14,
 	
 }
 
-public class VectorPacket : IDataPacket
+public struct VectorPacket : IDataPacket
 {
 	public float x;
 	public float y;
@@ -47,7 +48,7 @@ public class VectorPacket : IDataPacket
 	}
 }
 
-public class QuaternionPacket : IDataPacket
+public struct QuaternionPacket : IDataPacket
 {
 	public float x;
 	public float y;
@@ -75,7 +76,7 @@ public class QuaternionPacket : IDataPacket
 	}
 }
 
-public class RoomInfoPacket : IDataPacket
+public struct RoomInfoPacket : IDataPacket
 {
 	public int roomId;
 	public int maxCount;
@@ -103,24 +104,47 @@ public class RoomInfoPacket : IDataPacket
 	}
 }
 
-public class LocationInfoPacket : IDataPacket
+public struct PlayerInfoPacket : IDataPacket
+{
+	public int index;
+	public bool isAiming;
+	public int Health;
+
+	public ushort Deserialize(ArraySegment<byte> segment, int offset)
+	{
+		ushort count = (ushort)offset;
+		count += PacketUtility.ReadIntData(segment, count, out index);
+		count += PacketUtility.ReadBoolData(segment, count, out isAiming);
+		count += PacketUtility.ReadIntData(segment, count, out Health);
+		return (ushort)(count - offset);
+	}
+
+	public ushort Serialize(ArraySegment<byte> segment, int offset)
+	{
+		ushort count = (ushort)offset;
+		count += PacketUtility.AppendIntData(this.index, segment, count);
+		count += PacketUtility.AppendBoolData(this.isAiming, segment, count);
+		count += PacketUtility.AppendIntData(this.Health, segment, count);
+		return (ushort)(count - offset);
+	}
+}
+
+public struct LocationInfoPacket : IDataPacket
 {
 	public int index;
 	public int animHash;
-	public bool isAiming;
 	public VectorPacket position;
 	public QuaternionPacket rotation;
-	public VectorPacket mouse;
+	public QuaternionPacket gunRotation;
 
 	public ushort Deserialize(ArraySegment<byte> segment, int offset)
 	{
 		ushort count = (ushort)offset;
 		count += PacketUtility.ReadIntData(segment, count, out index);
 		count += PacketUtility.ReadIntData(segment, count, out animHash);
-		count += PacketUtility.ReadBoolData(segment, count, out isAiming);
 		count += PacketUtility.ReadDataPacketData(segment, count, out position);
 		count += PacketUtility.ReadDataPacketData(segment, count, out rotation);
-		count += PacketUtility.ReadDataPacketData(segment, count, out mouse);
+		count += PacketUtility.ReadDataPacketData(segment, count, out gunRotation);
 		return (ushort)(count - offset);
 	}
 
@@ -129,21 +153,21 @@ public class LocationInfoPacket : IDataPacket
 		ushort count = (ushort)offset;
 		count += PacketUtility.AppendIntData(this.index, segment, count);
 		count += PacketUtility.AppendIntData(this.animHash, segment, count);
-		count += PacketUtility.AppendBoolData(this.isAiming, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.position, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.rotation, segment, count);
-		count += PacketUtility.AppendDataPacketData(this.mouse, segment, count);
+		count += PacketUtility.AppendDataPacketData(this.gunRotation, segment, count);
 		return (ushort)(count - offset);
 	}
 }
 
-public class SnapshotPacket : IDataPacket
+public struct SnapshotPacket : IDataPacket
 {
 	public int index;
 	public int animHash;
 	public long timestamp;
 	public VectorPacket position;
 	public QuaternionPacket rotation;
+	public QuaternionPacket gunRotation;
 
 	public ushort Deserialize(ArraySegment<byte> segment, int offset)
 	{
@@ -153,6 +177,7 @@ public class SnapshotPacket : IDataPacket
 		count += PacketUtility.ReadLongData(segment, count, out timestamp);
 		count += PacketUtility.ReadDataPacketData(segment, count, out position);
 		count += PacketUtility.ReadDataPacketData(segment, count, out rotation);
+		count += PacketUtility.ReadDataPacketData(segment, count, out gunRotation);
 		return (ushort)(count - offset);
 	}
 
@@ -164,11 +189,12 @@ public class SnapshotPacket : IDataPacket
 		count += PacketUtility.AppendLongData(this.timestamp, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.position, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.rotation, segment, count);
+		count += PacketUtility.AppendDataPacketData(this.gunRotation, segment, count);
 		return (ushort)(count - offset);
 	}
 }
 
-public class TeamInfoPacket : IDataPacket
+public struct TeamInfoPacket : IDataPacket
 {
 	public int index;
 	public ushort team;
@@ -190,10 +216,11 @@ public class TeamInfoPacket : IDataPacket
 	}
 }
 
-public class AttackInfoBr : IDataPacket
+public struct AttackInfoBr : IDataPacket
 {
 	public int hitPlayerIndex;
 	public int attackerIndex;
+	public int damage;
 	public VectorPacket firePos;
 	public VectorPacket direction;
 
@@ -202,6 +229,7 @@ public class AttackInfoBr : IDataPacket
 		ushort count = (ushort)offset;
 		count += PacketUtility.ReadIntData(segment, count, out hitPlayerIndex);
 		count += PacketUtility.ReadIntData(segment, count, out attackerIndex);
+		count += PacketUtility.ReadIntData(segment, count, out damage);
 		count += PacketUtility.ReadDataPacketData(segment, count, out firePos);
 		count += PacketUtility.ReadDataPacketData(segment, count, out direction);
 		return (ushort)(count - offset);
@@ -212,6 +240,7 @@ public class AttackInfoBr : IDataPacket
 		ushort count = (ushort)offset;
 		count += PacketUtility.AppendIntData(this.hitPlayerIndex, segment, count);
 		count += PacketUtility.AppendIntData(this.attackerIndex, segment, count);
+		count += PacketUtility.AppendIntData(this.damage, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.firePos, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.direction, segment, count);
 		return (ushort)(count - offset);
@@ -445,7 +474,8 @@ public class S_TestText : IPacket
 public class S_EnterRoomFirst : IPacket
 {
 	public int myIndex;
-	public List<LocationInfoPacket> playerInfos;
+	public List<LocationInfoPacket> playerLocations;
+	public List<PlayerInfoPacket> playerInfos;
 
 	public ushort Protocol { get { return (ushort)PacketID.S_EnterRoomFirst; } }
 
@@ -456,6 +486,7 @@ public class S_EnterRoomFirst : IPacket
 		count += sizeof(ushort);
 		count += sizeof(ushort);
 		count += PacketUtility.ReadIntData(segment, count, out myIndex);
+		count += PacketUtility.ReadListData(segment, count, out playerLocations);
 		count += PacketUtility.ReadListData(segment, count, out playerInfos);
 	}
 
@@ -467,6 +498,7 @@ public class S_EnterRoomFirst : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendIntData(this.myIndex, segment, count);
+		count += PacketUtility.AppendListData(this.playerLocations, segment, count);
 		count += PacketUtility.AppendListData(this.playerInfos, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
@@ -475,7 +507,7 @@ public class S_EnterRoomFirst : IPacket
 
 public class S_UpdateInfos : IPacket
 {
-	public List<LocationInfoPacket> playerInfos;
+	public List<PlayerInfoPacket> playerInfos;
 	public List<SnapshotPacket> snapshots;
 	public List<AttackInfoBr> attacks;
 
@@ -509,6 +541,7 @@ public class S_UpdateInfos : IPacket
 
 public class C_UpdateLocation : IPacket
 {
+	public bool isAiming;
 	public LocationInfoPacket location;
 
 	public ushort Protocol { get { return (ushort)PacketID.C_UpdateLocation; } }
@@ -519,6 +552,7 @@ public class C_UpdateLocation : IPacket
 
 		count += sizeof(ushort);
 		count += sizeof(ushort);
+		count += PacketUtility.ReadBoolData(segment, count, out isAiming);
 		count += PacketUtility.ReadDataPacketData(segment, count, out location);
 	}
 
@@ -529,6 +563,7 @@ public class C_UpdateLocation : IPacket
 
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
+		count += PacketUtility.AppendBoolData(this.isAiming, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.location, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
@@ -558,6 +593,34 @@ public class S_TeamInfos : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendListData(this.teamInfos, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
+		return SendBufferHelper.Close(count);
+	}
+}
+
+public class S_UpdateLocations : IPacket
+{
+	public List<LocationInfoPacket> locations;
+
+	public ushort Protocol { get { return (ushort)PacketID.S_UpdateLocations; } }
+
+	public void Deserialize(ArraySegment<byte> segment)
+	{
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += sizeof(ushort);
+		count += PacketUtility.ReadListData(segment, count, out locations);
+	}
+
+	public ArraySegment<byte> Serialize()
+	{
+		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
+		count += PacketUtility.AppendListData(this.locations, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}

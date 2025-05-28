@@ -8,7 +8,7 @@ namespace Server.Rooms
     class RoomManager : Singleton<RoomManager>
     {
 
-        private Dictionary<int, GameRoom> _rooms = new Dictionary<int, GameRoom>();
+        private Dictionary<int, Room> _rooms = new Dictionary<int, Room>();
         private ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
         private int _roomIdGenerator = 0;
         public void UpdateRooms()
@@ -53,7 +53,7 @@ namespace Server.Rooms
                 _rwLock.ExitWriteLock();
             }
         }
-        public GameRoom GetRoomById(int roomId)
+        public Room GetRoomById(int roomId)
         {
             try
             {

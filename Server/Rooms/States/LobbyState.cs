@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Server.Objects;
+using System;
 using System.Collections.Generic;
 
 namespace Server.Rooms.States
@@ -31,13 +32,15 @@ namespace Server.Rooms.States
             var keys = _room.GetSessionKeys();
             for (int i = 0; i < _room.SessionCount; i++)
             {
+                ClientSession session = _room.GetSession(keys[i]);
+                Player player = _room.GetObject<Player>(session.PlayerId);
                 infos.Add(new TeamInfoPacket()
                 {
-                    index = keys[i],
+                    index = player.index,
                     team = teams[i]
                 });
-                Console.WriteLine($"index:{keys[i]}, Team:{teams[i]}");
-                
+                player.team = (Team)teams[i];
+                Console.WriteLine($"index:{keys[i]}, Team:{(Team)teams[i]}");
             }
             _room.Broadcast(new S_TeamInfos() { teamInfos = infos });
         }

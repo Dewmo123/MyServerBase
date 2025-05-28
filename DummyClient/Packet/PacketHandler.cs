@@ -49,8 +49,11 @@ class PacketHandler
         }
     }
 
+    internal static void S_UpdateLocationsHandler(PacketSession session, IPacket packet)
+    {
+    }
+
     internal static void S_UpdateSnapshotHandler(PacketSession session, IPacket packet)
     {
-        throw new NotImplementedException();
     }
 }

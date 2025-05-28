@@ -114,7 +114,7 @@ public class {0} : IPacket
 ";
         public static string dataPacketFormat =
             @"
-public class {0} : IDataPacket
+public struct {0} : IDataPacket
 {{
 	{1}
 
