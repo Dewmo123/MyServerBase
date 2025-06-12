@@ -44,8 +44,17 @@ namespace Server
             flushTimer.Elapsed += UpdateLoop;
             flushTimer.Enabled = true;
             flushTimer.AutoReset = true;
+            Timer syncTimer = new Timer(3000);
+            syncTimer.Elapsed += SyncTime;
+            syncTimer.Enabled = true;
+            syncTimer.AutoReset = true;
         }
-
+        static S_BroadcastTime time = new();
+        private static void SyncTime(object sender, ElapsedEventArgs e)
+        {
+            time.time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            SessionManager.Instance.BroadcastAll(time);
+        }
         private static void UpdateLoop(object sender, ElapsedEventArgs e)
         {
 		//Console.WriteLine(timer.ElapsedMilliseconds);
