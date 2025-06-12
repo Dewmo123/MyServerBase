@@ -49,6 +49,7 @@ namespace Server.Rooms.States
                     position = player.position.ToPacket(),
                     rotation = player.rotation.ToPacket(),
                     animHash = player.animHash,
+                    speed = player.speed,
                     gunRotation = player.gunRotation.ToPacket(),
                     timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                 });

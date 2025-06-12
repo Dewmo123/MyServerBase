@@ -12,6 +12,7 @@ namespace Server.Objects
         public Team team;
         public Quaternion gunRotation;
         public int animHash;
+        public int speed;
         public string nickName;
 
         public Player(Room room) : base(room)
@@ -31,6 +32,7 @@ namespace Server.Objects
             position = packet.location.position.ToVector3();
             rotation = packet.location.rotation.ToQuaternion();
             gunRotation = packet.location.gunRotation.ToQuaternion();
+            speed = packet.speed;
             animHash = packet.location.animHash;
         }
 

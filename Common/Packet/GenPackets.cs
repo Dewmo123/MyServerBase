@@ -204,6 +204,7 @@ public struct SnapshotPacket : IDataPacket
 {
 	public int index;
 	public int animHash;
+	public int speed;
 	public long timestamp;
 	public VectorPacket position;
 	public QuaternionPacket rotation;
@@ -214,6 +215,7 @@ public struct SnapshotPacket : IDataPacket
 		ushort count = (ushort)offset;
 		count += PacketUtility.ReadIntData(segment, count, out index);
 		count += PacketUtility.ReadIntData(segment, count, out animHash);
+		count += PacketUtility.ReadIntData(segment, count, out speed);
 		count += PacketUtility.ReadLongData(segment, count, out timestamp);
 		count += PacketUtility.ReadDataPacketData(segment, count, out position);
 		count += PacketUtility.ReadDataPacketData(segment, count, out rotation);
@@ -226,6 +228,7 @@ public struct SnapshotPacket : IDataPacket
 		ushort count = (ushort)offset;
 		count += PacketUtility.AppendIntData(this.index, segment, count);
 		count += PacketUtility.AppendIntData(this.animHash, segment, count);
+		count += PacketUtility.AppendIntData(this.speed, segment, count);
 		count += PacketUtility.AppendLongData(this.timestamp, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.position, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.rotation, segment, count);
@@ -728,6 +731,7 @@ public class S_UpdateInfos : IPacket
 public class C_UpdateLocation : IPacket
 {
 	public bool isAiming;
+	public int speed;
 	public LocationInfoPacket location;
 
 	public ushort Protocol { get { return (ushort)PacketID.C_UpdateLocation; } }
@@ -739,6 +743,7 @@ public class C_UpdateLocation : IPacket
 		count += sizeof(ushort);
 		count += sizeof(ushort);
 		count += PacketUtility.ReadBoolData(segment, count, out isAiming);
+		count += PacketUtility.ReadIntData(segment, count, out speed);
 		count += PacketUtility.ReadDataPacketData(segment, count, out location);
 	}
 
@@ -750,6 +755,7 @@ public class C_UpdateLocation : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendBoolData(this.isAiming, segment, count);
+		count += PacketUtility.AppendIntData(this.speed, segment, count);
 		count += PacketUtility.AppendDataPacketData(this.location, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);

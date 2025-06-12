@@ -43,6 +43,7 @@
 	<dataPacket name="SnapshotPacket">
 		<int name="index"/>
 		<int name="animHash"/>
+		<int name="speed"/>
 		<long name="timestamp"/>
 		<VectorPacket name="position"/>
 		<QuaternionPacket name="rotation"/>
@@ -146,6 +147,7 @@
 	</packet>
 	<packet name="C_UpdateLocation">
 		<bool name="isAiming"/>
+		<int name="speed"/>
 		<LocationInfoPacket name="location"/>
 	</packet>
 	<packet name="S_TeamInfos">
