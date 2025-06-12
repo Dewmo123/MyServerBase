@@ -25,6 +25,8 @@ namespace Server.Rooms.States
         {
             ObjectBase hitObj = _room.GetObject<ObjectBase>(req.hitObjIndex);
             Player attacker = _room.GetObject<Player>(session.PlayerId);
+            if (attacker.IsDead)
+                return;
             if (hitObj == null)
             {
                 _updates.attacks.Add(new AttackInfoBr()
@@ -39,6 +41,8 @@ namespace Server.Rooms.States
             }
             if (hitObj is IHittable hittable)
             {
+                if (hittable.IsDead)
+                    return;
                 if (_room.CurrentState != RoomState.Between)
                     hittable.Hit();
                 _updates.attacks.Add(new AttackInfoBr()
