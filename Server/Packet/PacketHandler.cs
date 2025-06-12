@@ -22,9 +22,6 @@ class PacketHandler
         var clientSession = session as ClientSession;
         if (clientSession.Room != null || string.IsNullOrEmpty(clientSession.Name))
             return;
-        S_BroadcastTime time = new();
-        time.time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        clientSession.Send(time.Serialize());
         EnterRoomProcess(enterPacket.roomId, clientSession, (PacketID)enterPacket.Protocol);
     }
 
@@ -34,6 +31,9 @@ class PacketHandler
         if (room == default)
             return;
         Console.WriteLine("EnterRoom");
+        S_BroadcastTime time = new();
+        time.time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        clientSession.Send(time.Serialize());
         room.Push(() =>
         {
             if (room.CanAddPlayer)
