@@ -14,11 +14,51 @@ namespace Server.Rooms.States
         {
             base.Enter();
             _room.OnDoorStatusChange += HandleDoorStatusChange;
+            _room.OnAttack += HandleAttack;
         }
+
+        private void HandleAttack(ClientSession session, C_ShootReq req)
+        {
+            ObjectBase hitObj = _room.GetObject<ObjectBase>(req.hitObjIndex);
+            Player attacker = _room.GetObject<Player>(session.PlayerId);
+            if (attacker.IsDead)
+                return;
+            if (hitObj == null)
+            {
+                _updates.attacks.Add(new AttackInfoBr()
+                {
+                    attackerIndex = session.PlayerId,
+                    direction = req.direction,
+                    firePos = req.firePos,
+                    isDead = false,
+                    hitObjIndex = req.hitObjIndex,
+                    objectType = 0
+                });
+            }
+            if (hitObj is IHittable hittable)
+            {
+                if (hittable.IsDead)
+                    return;
+                if (_room.CurrentState != RoomState.Between)
+                    hittable.Hit();
+                _updates.attacks.Add(new AttackInfoBr()
+                {
+                    attackerIndex = session.PlayerId,
+                    direction = req.direction,
+                    firePos = req.firePos,
+                    isDead = hittable.IsDead,
+                    hitObjIndex = req.hitObjIndex,
+                    objectType = (ushort)hitObj.ObjectType
+                });
+
+            }
+
+        }        
         public override void Exit()
         {
             base.Exit();
             _room.OnDoorStatusChange -= HandleDoorStatusChange;
+            _room.OnAttack -= HandleAttack;
         }
         private void HandleDoorStatusChange(DoorStatus targetStatus, Door door, Player player)
         {

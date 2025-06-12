@@ -7,7 +7,7 @@ namespace Server.Rooms.States
 {
     abstract class SyncObjectsState : GameRoomState
     {
-        private S_UpdateInfos _updates = new();
+        protected S_UpdateInfos _updates = new();
         public SyncObjectsState(GameRoom room) : base(room)
         {
             _updates.playerInfos = new List<PlayerInfoPacket>(15);
@@ -18,45 +18,6 @@ namespace Server.Rooms.States
         {
             base.Enter();
             ResetPacket();
-            _room.OnAttack += HandleAttack;
-        }
-
-        private void HandleAttack(ClientSession session, C_ShootReq req)
-        {
-            ObjectBase hitObj = _room.GetObject<ObjectBase>(req.hitObjIndex);
-            Player attacker = _room.GetObject<Player>(session.PlayerId);
-            if (attacker.IsDead)
-                return;
-            if (hitObj == null)
-            {
-                _updates.attacks.Add(new AttackInfoBr()
-                {
-                    attackerIndex = session.PlayerId,
-                    direction = req.direction,
-                    firePos = req.firePos,
-                    isDead = false,
-                    hitObjIndex = req.hitObjIndex,
-                    objectType = 0
-                });
-            }
-            if (hitObj is IHittable hittable)
-            {
-                if (hittable.IsDead)
-                    return;
-                if (_room.CurrentState != RoomState.Between)
-                    hittable.Hit();
-                _updates.attacks.Add(new AttackInfoBr()
-                {
-                    attackerIndex = session.PlayerId,
-                    direction = req.direction,
-                    firePos = req.firePos,
-                    isDead = hittable.IsDead,
-                    hitObjIndex = req.hitObjIndex,
-                    objectType = (ushort)hitObj.ObjectType
-                });
-
-            }
-
         }
         public override void Exit()
         {
@@ -66,10 +27,9 @@ namespace Server.Rooms.States
                 _room.Broadcast(_updates);
                 ResetPacket();
             }
-            _room.OnAttack -= HandleAttack;
         }
 
-        private void ResetPacket()
+        public void ResetPacket()
         {
             _updates.playerInfos.Clear();
             _updates.snapshots.Clear();

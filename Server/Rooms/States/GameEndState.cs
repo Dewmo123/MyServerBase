@@ -11,6 +11,7 @@ namespace Server.Rooms.States
         {
             _endCount = new CountTime(HandleElapsed, OnCountEnd, _endTime, 100);
         }
+        private bool isEnd = false;
         public override void Enter()
         {
             base.Enter();
@@ -19,13 +20,19 @@ namespace Server.Rooms.States
         private void OnCountEnd()
         {
             S_LeaveRoom leavePacket = new();
-
+            isEnd = true;
+            ResetPacket();
             foreach (var item in _room.Sessions)
             {
                 item.Value.Send(leavePacket.Serialize());
                 item.Value.Room = null;
             }
             _room.AllPlayerExit();
+        }
+        public override void Update()
+        {
+            if (!isEnd)
+                base.Update();
         }
         S_SyncTimer _timerPacket = new();
         private void HandleElapsed(double obj)
@@ -37,7 +44,7 @@ namespace Server.Rooms.States
         {
             base.Dispose();
             if (_endCount.IsRunning)
-                _endCount.Abort();
+                _endCount.Abort(false);
         }
     }
 }

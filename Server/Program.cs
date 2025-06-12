@@ -38,7 +38,7 @@ namespace Server
         //}
         private static void InitFlushTimer()
         {
-            Timer flushTimer = new Timer(50);
+            Timer flushTimer = new Timer(10);
 
             flushTimer.Elapsed += UpdateLoop;
             flushTimer.Enabled = true;
