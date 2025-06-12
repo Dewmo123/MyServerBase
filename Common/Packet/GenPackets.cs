@@ -37,6 +37,7 @@ public enum PacketID
 	S_LeaveRoom = 29,
 	C_Reload = 30,
 	S_Reload = 31,
+	S_BroadcastTime = 32,
 	
 }
 
@@ -1309,6 +1310,34 @@ public class S_Reload : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendIntData(this.index, segment, count);
+		PacketUtility.AppendUshortData(count, segment, 0);
+		return SendBufferHelper.Close(count);
+	}
+}
+
+public class S_BroadcastTime : IPacket
+{
+	public long time;
+
+	public ushort Protocol { get { return (ushort)PacketID.S_BroadcastTime; } }
+
+	public void Deserialize(ArraySegment<byte> segment)
+	{
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += sizeof(ushort);
+		count += PacketUtility.ReadLongData(segment, count, out time);
+	}
+
+	public ArraySegment<byte> Serialize()
+	{
+		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+		ushort count = 0;
+
+		count += sizeof(ushort);
+		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
+		count += PacketUtility.AppendLongData(this.time, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);
 	}

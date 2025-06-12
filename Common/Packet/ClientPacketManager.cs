@@ -59,6 +59,8 @@ class PacketManager
 		_handler.Add((ushort)PacketID.S_LeaveRoom, PacketHandler.S_LeaveRoomHandler);
 		_onRecv.Add((ushort)PacketID.S_Reload, MakePacket<S_Reload>);
 		_handler.Add((ushort)PacketID.S_Reload, PacketHandler.S_ReloadHandler);
+		_onRecv.Add((ushort)PacketID.S_BroadcastTime, MakePacket<S_BroadcastTime>);
+		_handler.Add((ushort)PacketID.S_BroadcastTime, PacketHandler.S_BroadcastTimeHandler);
 
 	}
 

@@ -221,4 +221,7 @@
 	<packet name="S_Reload">
 		<int name="index"/>
 	</packet>
+	<packet name="S_BroadcastTime">
+		<long name="time"/>
+	</packet>
 </PDL>
