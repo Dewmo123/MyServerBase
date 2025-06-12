@@ -10,6 +10,7 @@ using Server.Rooms;
 using ServerCore;
 using Timer = System.Timers.Timer;
 
+
 namespace Server
 {
     class Program
@@ -20,7 +21,7 @@ namespace Server
         static void Main(string[] args)
         {
             // DNS (Domain Name System)
-            IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 7777);
+            IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 3303);
 
             _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
             Console.WriteLine("Listening...");
@@ -37,7 +38,8 @@ namespace Server
         //}
         private static void InitFlushTimer()
         {
-            Timer flushTimer = new Timer(10);
+            Timer flushTimer = new Timer(50);
+
             flushTimer.Elapsed += UpdateLoop;
             flushTimer.Enabled = true;
             flushTimer.AutoReset = true;
@@ -50,3 +52,4 @@ namespace Server
         }
     }
 }
+

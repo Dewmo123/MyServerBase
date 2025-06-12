@@ -78,7 +78,7 @@ namespace Server.Rooms.States
             foreach (var session in _room.Sessions)
             {
                 Player player = _room.GetObject<Player>(session.Value.PlayerId);
-                Console.WriteLine(player.index);
+                // Console.WriteLine(player.index);
                 _updates.snapshots.Add(new SnapshotPacket()
                 {
                     index = player.index,
