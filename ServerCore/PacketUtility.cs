@@ -53,6 +53,11 @@ namespace ServerCore
             result = BitConverter.ToInt64(buffer.Array, buffer.Offset + offset);
             return 8;
         }
+        public static ushort ReadDoubleData(ArraySegment<byte> buffer, int offset, out double result)
+        {
+            result = BitConverter.ToDouble(buffer.Array, buffer.Offset + offset);
+            return 8;
+        }
         public static ushort ReadUshortData(ArraySegment<byte> buffer, int offset, out ushort result)
         {
             result = BitConverter.ToUInt16(buffer.Array, buffer.Offset + offset);
@@ -134,6 +139,12 @@ namespace ServerCore
             return num;
         }
         public static ushort AppendLongData(long data, ArraySegment<byte> buffer, int offset)
+        {
+            ushort num = 8;
+            Buffer.BlockCopy(BitConverter.GetBytes(data), 0, buffer.Array, buffer.Offset + offset, num);
+            return num;
+        }
+        public static ushort AppendDoubleData(double data, ArraySegment<byte> buffer, int offset)
         {
             ushort num = 8;
             Buffer.BlockCopy(BitConverter.GetBytes(data), 0, buffer.Array, buffer.Offset + offset, num);

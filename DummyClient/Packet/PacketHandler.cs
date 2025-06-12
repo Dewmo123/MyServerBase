@@ -12,6 +12,10 @@ class PacketHandler
         Console.WriteLine($"myIndex : {players.myIndex}");
     }
 
+    internal static void S_PacketResponseHandler(PacketSession session, IPacket packet)
+    {
+    }
+
     internal static void S_RoomEnterHandler(PacketSession session, IPacket packet)
     {
         var roomEnter = packet as S_RoomEnter;
@@ -29,6 +33,10 @@ class PacketHandler
         {
             Console.WriteLine($"{item.roomId}: {item.currentCount} / {item.maxCount}");
         }
+    }
+
+    internal static void S_SyncTimerHandler(PacketSession session, IPacket packet)
+    {
     }
 
     internal static void S_TeamInfosHandler(PacketSession session, IPacket packet)
@@ -50,6 +58,10 @@ class PacketHandler
     }
 
     internal static void S_UpdateLocationsHandler(PacketSession session, IPacket packet)
+    {
+    }
+
+    internal static void S_UpdateRoomStateHandler(PacketSession session, IPacket packet)
     {
     }
 

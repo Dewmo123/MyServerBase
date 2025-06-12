@@ -1,6 +1,8 @@
-﻿namespace Server.Rooms.States
+﻿using System;
+
+namespace Server.Rooms.States
 {
-    abstract class GameRoomState
+    abstract class GameRoomState : IDisposable
     {
         protected GameRoom _room;
         public GameRoomState(GameRoom room)
@@ -10,5 +12,10 @@
         public virtual void Enter() { }
         public virtual void Update() { }
         public virtual void Exit() { }
+
+        public virtual void Dispose()
+        {
+            Console.WriteLine("StateDispose");
+        }
     }
 }

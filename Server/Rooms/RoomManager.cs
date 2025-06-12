@@ -37,10 +37,6 @@ namespace Server.Rooms
                 _rwLock.ExitReadLock();
             }
         }
-        public void EnterRoom(ClientSession session, int roomId)
-        {
-
-        }
         public void RemoveRoom(int roomId)
         {
             try
@@ -65,14 +61,15 @@ namespace Server.Rooms
                 _rwLock.ExitReadLock();
             }
         }
-        public int GenerateRoom(string roomName)
+        public int GenerateRoom(C_CreateRoom packet)
         {
             try
             {
                 _rwLock.EnterWriteLock();
                 int id = ++_roomIdGenerator;
                 Console.WriteLine($"Generate Room: {id}");
-                GameRoom room = new(Instance,roomName, id);
+                GameRoom room = new(Instance, packet.roomName, id);
+                room.Push(() => room.SetUpRoom(packet));
                 _rooms.Add(id, room);
                 return id;
             }

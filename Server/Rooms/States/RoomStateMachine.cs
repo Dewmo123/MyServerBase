@@ -1,42 +1,50 @@
-﻿using System;
+﻿using Server.Utiles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace Server.Rooms.States
 {
-    internal class RoomStateMachine
+    internal class RoomStateMachine : IDisposable
     {
-        private Dictionary<string, GameRoomState> _states;
-        private GameRoomState _currentState;
-        public string CurrentState { get; private set; }
+        private Dictionary<RoomState, GameRoomState> _states;
+        public GameRoomState CurrentState { get; private set; }
+        public RoomState CurrentStateEnum { get; private set; }
         public RoomStateMachine(GameRoom room)
         {
-            _states = new Dictionary<string, GameRoomState>();
+            _states = new Dictionary<RoomState, GameRoomState>();
             Assembly fsmAssembly = Assembly.GetAssembly(typeof(GameRoomState));
             List<Type> types = fsmAssembly.GetTypes()
                 .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(GameRoomState)))
                 .ToList();
             types.ForEach(type => _states.Add(
-                type.Name.Replace("State", "")
+                EnumHelper.StringToEnum<RoomState>(type.Name.Replace("State", ""))
                 , Activator.CreateInstance(type, room) as GameRoomState));
         }
-        public void ChangeState(string name)
+        public void ChangeState(RoomState type)
         {
-            if (_states.TryGetValue(name, out GameRoomState state))
+            if (_states.TryGetValue(type, out GameRoomState state))
             {
-                _currentState?.Exit();
-                CurrentState = name;
-                _currentState = state;
+                CurrentState?.Exit();
+                CurrentStateEnum = type;
+                CurrentState = state;
                 state.Enter();
             }
             else
             {
-                Console.WriteLine($"{name}State does not exist");
+                Console.WriteLine($"{type}State does not exist");
                 throw new System.Exception();
             }
         }
         public void UpdateRoom()
-            => _currentState.Update();
+            => CurrentState.Update();
+
+        public void Dispose()
+        {
+            foreach (var item in _states.Values)
+                item.Dispose();
+            _states.Clear();
+        }
     }
 }

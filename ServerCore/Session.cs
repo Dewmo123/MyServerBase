@@ -49,8 +49,8 @@ namespace ServerCore
         RecvBuffer _recvBuffer = new RecvBuffer(65535);
 
         object _lock = new object();
-        Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
-        List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
+        Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();//아직 보내기 전 패킷
+        List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();//지금 보내는 작업 중인 패킷들
         SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
         SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
 
@@ -98,7 +98,8 @@ namespace ServerCore
             lock (_lock)
             {
                 _sendQueue.Enqueue(sendBuff);
-                if (_pendingList.Count == 0)
+                //지금 보내는 중인 패킷이 있으면 그냥 이 매서드를 벗어남
+                if (_pendingList.Count == 0)//지금 보내는 중인 패킷이 없으면 내가 Send를 해
                     RegisterSend();
             }
         }
@@ -124,7 +125,7 @@ namespace ServerCore
             while (_sendQueue.Count > 0)
             {
                 ArraySegment<byte> buff = _sendQueue.Dequeue();
-                _pendingList.Add(buff);
+                _pendingList.Add(buff);//내가 지금 보낼 패킷을 팬딩리스트로 옮김
             }
             _sendArgs.BufferList = _pendingList;
 
@@ -166,7 +167,7 @@ namespace ServerCore
                     Disconnect();
                 }
             }
-        }
+        }       
 
         void RegisterRecv()
         {

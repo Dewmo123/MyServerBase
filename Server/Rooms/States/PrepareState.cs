@@ -1,55 +1,60 @@
 ﻿using Server.Objects;
-using ServerCore;
+using Server.Utiles;
 using System;
 using System.Collections.Generic;
 
 namespace Server.Rooms.States
 {
-    internal class PrepareState : GameRoomState
+    internal class PrepareState : SyncObjectsState
     {
         #region StartPos Settings
         private static readonly VectorPacket[] attackStartPos =
         {
-            new VectorPacket() { x=10,y=-5.5f,z=-10},
-            new VectorPacket() { x=5,y=-5.5f,z=-10},
-            new VectorPacket() { x=0,y=-5.5f,z=-10},
-            new VectorPacket() { x=-5,y=-5.5f,z=-10},
-            new VectorPacket() { x=-10,y=-5.5f,z=-10},
+            new VectorPacket() { x=-27,y=1,z=-14},
+            new VectorPacket() { x=-26,y=1,z=-15},
+            new VectorPacket() { x=-25,y=1,z=-14},
+            new VectorPacket() { x=-28,y=1,z=-15},
+            new VectorPacket() { x=-29,y=1,z=-14},
         };
         private static readonly VectorPacket[] defenseStartPos =
         {
-            new VectorPacket() { x=10,y=-5.5f,z=15},
-            new VectorPacket() { x=5,y=-5.5f,z=15},
-            new VectorPacket() { x=0,y=-5.5f,z=15},
-            new VectorPacket() { x=-5,y=-5.5f,z=15},
-            new VectorPacket() { x=-10,y=-5.5f,z=15},
-        };
-        private static Dictionary<Team, VectorPacket[]> startPos = new()
-        {
-            {Team.Attack,attackStartPos },
-            {Team.Defense,defenseStartPos }
+            new VectorPacket() { x=-3,y=1,z=16},
+            new VectorPacket() { x=-2,y=1,z=15},
+            new VectorPacket() { x=-4,y=1,z=16},
+            new VectorPacket() { x=-5,y=1,z=15},
+            new VectorPacket() { x=-6,y=1,z=16},
         };
         private static ushort[] randomTable = { 0, 1, 2, 3, 4 };
         #endregion
 
-        private S_UpdateInfos updates = new();
+
+        private S_SyncTimer _syncTime = new();
         private Random _rand = new Random();
+        private CountTime _roundCount;
+        private static readonly int _prepareTime = 5;
+
         public PrepareState(GameRoom room) : base(room)
         {
-            updates.playerInfos = new List<PlayerInfoPacket>(15);
-            updates.snapshots = new List<SnapshotPacket>(15);
-            updates.attacks = new List<AttackInfoBr>(15);
+            _roundCount = new CountTime(HandleTimerElapsed, CompleteTimer, _prepareTime, 100);
         }
         public override void Enter()
         {
             base.Enter();
-            Console.WriteLine("pREPARE");
-            updates.playerInfos.Clear();
-            updates.snapshots.Clear();
-            updates.attacks.Clear();
+            Console.WriteLine($"Current: {_room.CurrentRound}");
             SetStartPosition();
+            _room.ReviveAllPlayer();
+            _roundCount.StartCount();
         }
 
+        private void CompleteTimer()
+        {
+            _room.ChangeState(RoomState.InGame);
+        }
+        private void HandleTimerElapsed(double time)
+        {
+            _syncTime.time = _prepareTime - (float)time;
+            _room.Broadcast(_syncTime);
+        }
         private void SetStartPosition()
         {
             for (int i = 0; i < 10; i++)
@@ -60,50 +65,26 @@ namespace Server.Rooms.States
             int index = 0;
             S_UpdateLocations updateLocations = new();
             updateLocations.locations = new List<LocationInfoPacket>();
-            foreach (var item in _room.Sessions)
+            foreach (var item in _room.Sessions.Values)
             {
-                Player player = _room.GetObject<Player>(item.Value.PlayerId); 
+                Player player = _room.GetObject<Player>(item.PlayerId);
                 updateLocations.locations.Add(new LocationInfoPacket()
                 {
                     animHash = 0,
-                    index = item.Key,
+                    index = player.index,
                     gunRotation = new QuaternionPacket(),
-                    position = startPos[player.team][index % 5],
+                    position = _room.Attacker == player.team ? attackStartPos[index%5] : defenseStartPos[index%5],
                     rotation = new()
                 });
                 index++;
             }
             _room.Broadcast(updateLocations);
         }
-
-        public override void Update()
+        public override void Dispose()
         {
-            base.Update();
-            List<AttackInfoBr> attacks = _room.GetAttacks();
-            foreach (var session in _room.Sessions)
-            {
-                Player player = _room.GetObject<Player>(session.Value.PlayerId);
-                updates.snapshots.Add(new SnapshotPacket()
-                {
-                    index = player.index,
-                    position = player.position,
-                    rotation = player.rotation,
-                    animHash = player.animHash,
-                    gunRotation = player.gunRotation,
-                    timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-                });
-                updates.playerInfos.Add(new PlayerInfoPacket()
-                {
-                    Health = player.Health,
-                    index = player.index,
-                    isAiming = player.isAiming
-                });
-                //Console.WriteLine(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-            }
-            updates.attacks = attacks;
-            _room.Broadcast(updates);
-            updates.playerInfos.Clear();
-            updates.snapshots.Clear();
+            base.Dispose();
+            if (_roundCount.IsRunning)
+                _roundCount.Abort(false);
         }
     }
 }

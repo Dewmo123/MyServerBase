@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <!--가독성을 위해 dataPacket을 제일 위부터 쓰기!!-->
 <PDL>
+	<!--DataPackets-->
 	<dataPacket name ="VectorPacket">
 		<float name="x"/>
 		<float name="y"/>
@@ -26,6 +27,10 @@
 		<bool name="isAiming"/>
 		<int name="Health"/>
 	</dataPacket>
+	<dataPacket name="PlayerNamePacket">
+		<string name ="nickName"/>
+		<int name="index"/>
+	</dataPacket>
 	
 	<dataPacket name="LocationInfoPacket">
 		<int name="index"/>
@@ -50,18 +55,41 @@
 	</dataPacket>
 
 	<dataPacket name="AttackInfoBr">
-		<int name="hitPlayerIndex"/>
+		<int name="hitObjIndex"/>
 		<int name="attackerIndex"/>
-		<int name="damage"/>
+		<bool name="isDead"/>
+		<ushort name="objectType"/>
 		<VectorPacket name="firePos"/>
 		<VectorPacket name="direction"/>
 	</dataPacket>
+	<dataPacket name="CubeInfo">
+		<ushort name="objectType"/>
+		<int name="index"/>
+		<VectorPacket name="position"/>
+		<QuaternionPacket name="rotation"/>
+		<VectorPacket name="size"/>
+	</dataPacket>
+
+	<dataPacket name="PlantAreaInfo">
+		<ushort name="area"/>
+		<CubeInfo name="cube"/>
+	</dataPacket>
+	<dataPacket name="DoorInfo">
+		<ushort name="status"/>
+		<CubeInfo name="cube"/>
+	</dataPacket>
+	<dataPacket name="BreakableWallInfo">
+		<int name="Health"/>
+		<CubeInfo name="cube"/>
+	</dataPacket>
 	
+	<!--Packets-->
 	<packet name="C_RoomEnter">
 		<int name ="roomId"/>
 	</packet>
 	
 	<packet name="S_RoomEnter">
+		<PlayerNamePacket name="playerName"/>
 		<LocationInfoPacket name="newPlayer"/>
 	</packet>
 	
@@ -74,14 +102,20 @@
 	
 	<packet name="C_CreateRoom">
 		<string name="roomName"/>
+		<ushort name="playerCount"/>
+		<ushort name="roundCount"/>
+		<ushort name="playTime"/>
+		<ushort name="bombTime"/>
 	</packet>
-	
 	<packet name ="S_RoomList">
 		<list name ="roomInfos">
 			<roomInfoPacket name ="att"/>
 		</list>
 	</packet>
-	
+	<packet name="S_PacketResponse">
+		<ushort name="responsePacket"/>
+		<bool name="success"/>
+	</packet>
 	<packet name ="C_RoomList">
 	</packet>
 	
@@ -94,8 +128,8 @@
 		<list name="playerLocations">
 			<locationInfoPacket name="att"/>
 		</list>
-		<list name="playerInfos">
-			<playerInfoPacket name="att"/>
+		<list name="playerNames">
+			<playerNamePacket name="att"/>
 		</list>
 	</packet>
 
@@ -124,9 +158,67 @@
 			<locationInfoPacket name="att"/>
 		</list>
 	</packet>
+	<packet name="S_SyncTimer">
+		<float name="time"/>
+	</packet>
+	<packet name="S_UpdateRoomState">
+		<ushort name="state"/>
+	</packet>
 	<packet name="C_ShootReq">
-		<int name="hitPlayerIndex"/>
+		<int name="hitObjIndex"/>
 		<VectorPacket name="firePos"/>
 		<VectorPacket name="direction"/>
+	</packet>
+	<packet name="S_RoundEnd">
+		<int name="redCount"/>
+		<int name="blueCount"/>
+		<ushort name="winner"/>
+	</packet>
+	<packet name="S_GameEnd">
+		<ushort name="winner"/>
+	</packet>
+	<packet name="C_PlantBomb">
+		<ushort name="area"/>
+	</packet>
+	<packet name="C_DefuseBomb">
+	</packet>
+	<packet name="S_InitializeObjects">
+		<list name="plantAreas">
+			<PlantAreaInfo name="att"/>
+		</list>
+		<list name="doors">
+			<DoorInfo name="att"/>
+		</list>
+		<list name="breakableWalls">
+			<BreakableWallInfo name="att"/>
+		</list>
+	</packet>
+	<packet name="S_CreateBombArea">
+		<CubeInfo name="bombInfo"/>
+	</packet>
+	<packet name="S_SwitchRole">
+		<ushort name="Attacker"/>
+		<ushort name="Defender"/>
+	</packet>
+	<packet name="S_RemoveObject">
+		<int name="index"/>
+	</packet>
+	<packet name="S_DoorStatus">
+		<int name="index"/>
+		<ushort name="status"/>
+	</packet>
+	<packet name="C_DoorStatus">
+		<int name="index"/>
+		<ushort name="status"/>
+	</packet>
+	<packet name="C_SetName">
+		<string name="nickName"/>
+	</packet>
+	<packet name="S_LeaveRoom">
+	</packet>
+	<packet name="C_Reload">
+	</packet>
+	<packet name="S_Reload">
+		<int name="index"/>
 	</packet>
 </PDL>

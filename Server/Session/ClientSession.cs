@@ -15,6 +15,7 @@ namespace Server
 		public int SessionId { get; set; }
 		public Room Room { get; set; }
 		public int PlayerId { get; set; }
+		public string Name { get; set; }
 
 		#region Callback
 		public override void OnConnected(EndPoint endPoint)
@@ -34,7 +35,7 @@ namespace Server
 			if (Room != null)
 			{
 				Room room = Room;
-				room.Push(() => room.Leave(SessionId));
+				room.Push(() => room.Leave(this));
 				Room = null;
 			}
 

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Server.Rooms;
 using ServerCore;
+using Timer = System.Timers.Timer;
 
 namespace Server
 {
@@ -22,7 +24,6 @@ namespace Server
 
             _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
             Console.WriteLine("Listening...");
-            roomManager.GenerateRoom("ASDASD");
             InitFlushTimer();
             //InitUpdateTimer();
             while (true) { }
@@ -46,7 +47,6 @@ namespace Server
         {
             roomManager.UpdateRooms();
             roomManager.FlushRooms();
-            //Console.WriteLine($"Update: {DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}");
         }
     }
 }

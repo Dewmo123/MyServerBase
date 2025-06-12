@@ -1,19 +1,23 @@
 ﻿using Server.Objects;
+using Server.Utiles;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Server.Rooms.States
 {
     class LobbyState : GameRoomState
     {
         private Random _rand;
-        List<TeamInfoPacket> infos;
+        private List<TeamInfoPacket> infos;
 
         public LobbyState(GameRoom room) : base(room)
         {
             _rand = new Random();
             infos = new List<TeamInfoPacket>();
         }
+
         public override void Enter()
         {
             base.Enter();
@@ -23,7 +27,7 @@ namespace Server.Rooms.States
         {
             base.Update();
             if (!_room.CanAddPlayer)
-                _room.ChangeState("Prepare");
+                _room.ChangeState(RoomState.Prepare);
         }
         public override void Exit()
         {
@@ -43,6 +47,7 @@ namespace Server.Rooms.States
                 Console.WriteLine($"index:{keys[i]}, Team:{(Team)teams[i]}");
             }
             _room.Broadcast(new S_TeamInfos() { teamInfos = infos });
+            _room.GameStart();
         }
 
         private ushort[] GetRamdomTeams()
@@ -52,8 +57,8 @@ namespace Server.Rooms.States
                 throw new NullReferenceException();
             for (int i = 1; i <= arr.Length / 2; i++)
             {
-                arr[i - 1] = 1;
-                arr[arr.Length - i] = 0;
+                arr[i - 1] = (ushort)Team.Blue;
+                arr[arr.Length - i] = (ushort)Team.Red;
             }
             for (int i = 0; i < 100; i++)
             {
