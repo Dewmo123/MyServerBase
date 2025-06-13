@@ -52,7 +52,8 @@ namespace Server.Rooms.States
                 });
 
             }
-
+            _room.Broadcast(_updates);
+            ResetPacket();
         }        
         public override void Exit()
         {
