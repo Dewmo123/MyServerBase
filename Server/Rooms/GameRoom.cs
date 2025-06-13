@@ -143,8 +143,11 @@ namespace Server.Rooms
                 bombArea = null;
             }
             if (CheckGameEnd(teamInfos[Team.Red].WinCount, teamInfos[Team.Blue].WinCount))
+            {
+                SendRoundEnd(winTeam, true);
                 return;
-            SendRoundEnd(winTeam);
+            }
+            SendRoundEnd(winTeam, false);
             if (CurrentRound == roundCount / 2)
             {
                 Attacker = Attacker == Team.Blue ? Team.Red : Team.Blue;
@@ -162,7 +165,7 @@ namespace Server.Rooms
             ChangeState(RoomState.Between);
         }
 
-        private void SendRoundEnd(Team winTeam)
+        private void SendRoundEnd(Team winTeam, bool isEnd)
         {
             S_RoundEnd roundEnd = new();
             roundEnd.winner = (ushort)winTeam;

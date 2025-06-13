@@ -912,6 +912,7 @@ public class S_RoundEnd : IPacket
 {
 	public int redCount;
 	public int blueCount;
+	public bool isEnd;
 	public ushort winner;
 
 	public ushort Protocol { get { return (ushort)PacketID.S_RoundEnd; } }
@@ -924,6 +925,7 @@ public class S_RoundEnd : IPacket
 		count += sizeof(ushort);
 		count += PacketUtility.ReadIntData(segment, count, out redCount);
 		count += PacketUtility.ReadIntData(segment, count, out blueCount);
+		count += PacketUtility.ReadBoolData(segment, count, out isEnd);
 		count += PacketUtility.ReadUshortData(segment, count, out winner);
 	}
 
@@ -936,6 +938,7 @@ public class S_RoundEnd : IPacket
 		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
 		count += PacketUtility.AppendIntData(this.redCount, segment, count);
 		count += PacketUtility.AppendIntData(this.blueCount, segment, count);
+		count += PacketUtility.AppendBoolData(this.isEnd, segment, count);
 		count += PacketUtility.AppendUshortData(this.winner, segment, count);
 		PacketUtility.AppendUshortData(count, segment, 0);
 		return SendBufferHelper.Close(count);

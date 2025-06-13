@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.Timers;
-using Server.Rooms;
+﻿using Server.Rooms;
 using ServerCore;
+using System;
+using System.Diagnostics;
+using System.Net;
+using System.Timers;
 using Timer = System.Timers.Timer;
 
 
@@ -18,12 +13,12 @@ namespace Server
     {
         static Listener _listener = new Listener();
         public static RoomManager roomManager = RoomManager.Instance;
-	public static Stopwatch timer;
+        public static Stopwatch timer;
         static void Main(string[] args)
         {
             // DNS (Domain Name System)
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 3303);
-	    timer = new();
+            timer = new();
             _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
             Console.WriteLine("Listening...");
             InitFlushTimer();
@@ -40,7 +35,7 @@ namespace Server
         private static void InitFlushTimer()
         {
             Timer flushTimer = new Timer(15);
-		timer.Restart();
+            timer.Restart();
             flushTimer.Elapsed += UpdateLoop;
             flushTimer.Enabled = true;
             flushTimer.AutoReset = true;
@@ -57,7 +52,7 @@ namespace Server
         }
         private static void UpdateLoop(object sender, ElapsedEventArgs e)
         {
-		//Console.WriteLine(timer.ElapsedMilliseconds);
+            //Console.WriteLine(timer.ElapsedMilliseconds);
             roomManager.UpdateRooms();
             roomManager.FlushRooms();
         }
