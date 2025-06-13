@@ -18,15 +18,26 @@ namespace Server.Rooms.States
         {
             base.Enter();
             ResetPacket();
+            _room.OnAttack += HandleAttack;
+        }
+        protected virtual void HandleAttack(ClientSession session, C_ShootReq req)
+        {
+            _updates.attacks.Add(new AttackInfoBr()
+            {
+                attackerIndex = session.PlayerId,
+                direction = req.direction,
+                firePos = req.firePos,
+                isDead = false,
+                hitObjIndex = 0,
+                objectType = 0
+            });
+            _room.Broadcast(_updates);
+            ResetPacket();
         }
         public override void Exit()
         {
             base.Exit();
-            if (_updates.attacks.Count > 0 || _updates.playerInfos.Count > 0 || _updates.snapshots.Count > 0)
-            {
-                _room.Broadcast(_updates);
-                ResetPacket();
-            }
+            _room.OnAttack -= HandleAttack;
         }
 
         public void ResetPacket()
@@ -49,7 +60,6 @@ namespace Server.Rooms.States
                     position = player.position.ToPacket(),
                     rotation = player.rotation.ToPacket(),
                     animHash = player.animHash,
-                    speed = player.speed,
                     gunRotation = player.gunRotation.ToPacket(),
                     timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                 });

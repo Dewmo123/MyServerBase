@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Server.Rooms.States
 {
-    class LobbyState : GameRoomState
+    class LobbyState : SyncObjectsState
     {
         private Random _rand;
         private List<TeamInfoPacket> infos;

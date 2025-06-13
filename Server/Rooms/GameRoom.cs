@@ -191,10 +191,10 @@ namespace Server.Rooms
 
         private void SendGameEnd(short winner)
         {
+            ChangeState(RoomState.GameEnd);
             S_GameEnd gameEnd = new();
             gameEnd.winner = (ushort)winner;
             Broadcast(gameEnd);
-            ChangeState(RoomState.GameEnd);
         }
 
         public void FirstEnterProcess(ClientSession session)

@@ -12,6 +12,8 @@ class PacketHandler
     {
         var createRoom = packet as C_CreateRoom;
         var clientSession = session as ClientSession;
+        if (string.IsNullOrEmpty(createRoom.roomName) || createRoom.roomName.Length > 20)
+            return;
         int roomId = _roomManager.GenerateRoom(createRoom);
         EnterRoomProcess(roomId, clientSession, (PacketID)createRoom.Protocol);
     }
@@ -145,7 +147,7 @@ class PacketHandler
     {
         var clientSession = session as ClientSession;
         var setName = packet as C_SetName;
-        bool success = !string.IsNullOrEmpty(setName.nickName) || (setName.nickName.Length < 6 && setName.nickName.Length > 2);
+        bool success = !string.IsNullOrEmpty(setName.nickName) && (setName.nickName.Length <= 6 && setName.nickName.Length >= 2);
         if (success)
             clientSession.Name = setName.nickName;
         SendPacketResponse(clientSession, PacketID.C_SetName, success);

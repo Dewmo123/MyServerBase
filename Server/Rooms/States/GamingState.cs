@@ -14,10 +14,9 @@ namespace Server.Rooms.States
         {
             base.Enter();
             _room.OnDoorStatusChange += HandleDoorStatusChange;
-            _room.OnAttack += HandleAttack;
         }
 
-        private void HandleAttack(ClientSession session, C_ShootReq req)
+        protected override void HandleAttack(ClientSession session, C_ShootReq req)
         {
             ObjectBase hitObj = _room.GetObject<ObjectBase>(req.hitObjIndex);
             Player attacker = _room.GetObject<Player>(session.PlayerId);
@@ -59,7 +58,6 @@ namespace Server.Rooms.States
         {
             base.Exit();
             _room.OnDoorStatusChange -= HandleDoorStatusChange;
-            _room.OnAttack -= HandleAttack;
         }
         private void HandleDoorStatusChange(DoorStatus targetStatus, Door door, Player player)
         {

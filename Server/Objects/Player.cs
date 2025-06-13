@@ -32,7 +32,6 @@ namespace Server.Objects
             position = packet.location.position.ToVector3();
             rotation = packet.location.rotation.ToQuaternion();
             gunRotation = packet.location.gunRotation.ToQuaternion();
-            speed = packet.speed;
             animHash = packet.location.animHash;
         }
 
