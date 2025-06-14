@@ -12,7 +12,7 @@ class PacketHandler
     {
         var createRoom = packet as C_CreateRoom;
         var clientSession = session as ClientSession;
-        if (string.IsNullOrEmpty(createRoom.roomName) || createRoom.roomName.Length > 20)
+        if (string.IsNullOrEmpty(createRoom.roomName) || createRoom.roomName.Length > 20||clientSession.Room!=null)
             return;
         int roomId = _roomManager.GenerateRoom(createRoom);
         EnterRoomProcess(roomId, clientSession, (PacketID)createRoom.Protocol);
