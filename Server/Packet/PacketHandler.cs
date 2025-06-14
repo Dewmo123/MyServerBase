@@ -30,7 +30,7 @@ class PacketHandler
     private static void EnterRoomProcess(int roomId, ClientSession clientSession, PacketID caller)
     {
         var room = _roomManager.GetRoomById(roomId) as GameRoom;
-        if (room == default)
+        if (room == default || clientSession.Room != null)
             return;
         Console.WriteLine("EnterRoom");
         S_BroadcastTime time = new();
