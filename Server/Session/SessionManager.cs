@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Server
 {
@@ -13,22 +14,17 @@ namespace Server
         int _sessionId = 0;
 
         ConcurrentDictionary<int, ClientSession> _sessions = new ConcurrentDictionary<int, ClientSession>();
-        object _lock = new object();
 
         public ClientSession Generate()
         {
-            lock (_lock)
-            {
-                int sessionId = ++_sessionId;
+            int sessionId = Interlocked.Increment(ref _sessionId);
+            ClientSession session = new ClientSession();
+            session.SessionId = sessionId;
+            _sessions.TryAdd(sessionId, session);
 
-                ClientSession session = new ClientSession();
-                session.SessionId = sessionId;
-                _sessions.TryAdd(sessionId, session);
+            Console.WriteLine($"Connected : {sessionId}");
 
-                Console.WriteLine($"Connected : {sessionId}");
-
-                return session;
-            }
+            return session;
         }
 
         public ClientSession Find(int id)

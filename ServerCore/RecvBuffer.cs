@@ -42,7 +42,7 @@ namespace ServerCore
 				// 남은 찌끄레기가 있으면 시작 위치로 복사
 				Array.Copy(_buffer.Array, _buffer.Offset + _readPos, _buffer.Array, _buffer.Offset, dataSize);
 				_readPos = 0;
-				_writePos = dataSize;
+				_writePos = dataSize;	
 			}
 		}
 
