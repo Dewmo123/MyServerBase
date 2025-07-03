@@ -20,7 +20,7 @@ namespace Server.Rooms
 
         }
         protected Dictionary<int, ClientSession> _sessions = new Dictionary<int, ClientSession>();
-        private JobQueue _jobQueue = new JobQueue();
+        private JobQueue _jobQueue = new();
         private ConcurrentQueue<ArraySegment<byte>> _pendingList = new();
         public string RoomName { get; private set; }
         public int RoomId { get; private set; } = 0;

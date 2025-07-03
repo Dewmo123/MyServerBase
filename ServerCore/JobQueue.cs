@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace ServerCore
 {
@@ -55,4 +57,34 @@ namespace ServerCore
 			}
 		}
 	}
+	public class LockFreeJobQueue : IJobQueue
+	{
+		private readonly ConcurrentQueue<Action> _queue = new();
+		private int _flush = 0;
+
+		public void Push(Action job)
+		{
+			_queue.Enqueue(job);
+
+			if (Interlocked.CompareExchange(ref _flush, 1, 0) == 0)
+			{
+				Flush();
+			}
+		}
+
+		public void Flush()
+		{
+			do
+			{
+				while (_queue.TryDequeue(out var job))
+				{
+					job.Invoke();
+				}
+
+				Interlocked.Exchange(ref _flush, 0);
+
+			} while (_queue.Count > 0 && Interlocked.CompareExchange(ref _flush, 1, 0) == 0);
+		}
+	}
 }
+
