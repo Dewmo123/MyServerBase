@@ -25,7 +25,11 @@ namespace Server.Rooms.States
             _gameCount.SetEndTime(_room.playTime);
             _gameCount.StartCount();
         }
-
+        public override void Update()
+        {
+            base.Update();
+            _gameCount.UpdateDeltaTime();
+        }
         private void HandlePlant(Vector3 plantPos)
         {
             S_CreateBombArea createBomb = new();
@@ -42,12 +46,6 @@ namespace Server.Rooms.States
             if (_gameCount.IsRunning)
                 _gameCount.Abort(false);
             _room.OnPlant -= HandlePlant;
-        }
-        public override void Dispose()
-        {
-            base.Dispose();
-            if (_gameCount.IsRunning)
-                _gameCount.Abort(false);
         }
         #region Timer
         private void HandleTimerEnd()

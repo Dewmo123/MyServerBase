@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Server.Rooms.States
 {
-    internal class RoomStateMachine : IDisposable
+    internal class RoomStateMachine
     {
         private Dictionary<RoomState, GameRoomState> _states;
         public GameRoomState CurrentState { get; private set; }
@@ -39,12 +39,5 @@ namespace Server.Rooms.States
         }
         public void UpdateRoom()
             => CurrentState.Update();
-
-        public void Dispose()
-        {
-            foreach (var item in _states.Values)
-                item.Dispose();
-            _states.Clear();
-        }
     }
 }

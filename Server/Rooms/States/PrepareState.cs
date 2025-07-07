@@ -35,7 +35,7 @@ namespace Server.Rooms.States
 
         public PrepareState(GameRoom room) : base(room)
         {
-            _roundCount = new CountTime(HandleTimerElapsed, CompleteTimer, _prepareTime, 100);
+            _roundCount = new (HandleTimerElapsed, CompleteTimer, _prepareTime, 100);
         }
         public override void Enter()
         {
@@ -45,7 +45,11 @@ namespace Server.Rooms.States
             _room.ReviveAllPlayer();
             _roundCount.StartCount();
         }
-
+        public override void Update()
+        {
+            base.Update();
+            _roundCount.UpdateDeltaTime();
+        }
         private void CompleteTimer()
         {
             _room.ChangeState(RoomState.InGame);
@@ -79,12 +83,6 @@ namespace Server.Rooms.States
                 index++;
             }
             _room.Broadcast(updateLocations);
-        }
-        public override void Dispose()
-        {
-            base.Dispose();
-            if (_roundCount.IsRunning)
-                _roundCount.Abort(false);
         }
     }
 }

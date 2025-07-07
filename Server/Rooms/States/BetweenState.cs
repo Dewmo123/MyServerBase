@@ -25,11 +25,10 @@ namespace Server.Rooms.States
             _syncTimer.time = _betweenTime - (float)obj;
             _room.Broadcast(_syncTimer);
         }
-        public override void Dispose()
+        public override void Update()
         {
-            base.Dispose();
-            if (_countBetween.IsRunning)
-                _countBetween.Abort(false);
+            base.Update();
+            _countBetween.UpdateDeltaTime();
         }
         public override void Exit()
         {

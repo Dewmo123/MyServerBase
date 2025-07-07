@@ -2,7 +2,7 @@
 
 namespace Server.Rooms.States
 {
-    abstract class GameRoomState : IDisposable
+    abstract class GameRoomState
     {
         protected GameRoom _room;
         public GameRoomState(GameRoom room)
@@ -12,10 +12,5 @@ namespace Server.Rooms.States
         public virtual void Enter() { }
         public virtual void Update() { }
         public virtual void Exit() { }
-
-        public virtual void Dispose()
-        {
-            Console.WriteLine("StateDispose");
-        }
     }
 }

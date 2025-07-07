@@ -1,4 +1,5 @@
 ﻿using Server.Rooms;
+using Server.Utiles;
 using ServerCore;
 using System;
 using System.Diagnostics;
@@ -50,9 +51,13 @@ namespace Server
             time.time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             SessionManager.Instance.BroadcastAll(time);
         }
+        static long beforeTick;
         private static void UpdateLoop(object sender, ElapsedEventArgs e)
         {
-            //Console.WriteLine(timer.ElapsedMilliseconds);
+            float deltaTime = (timer.ElapsedMilliseconds - beforeTick)/1000f;
+            //Console.WriteLine(deltaTime);
+            Time.deltaTime = deltaTime;
+            beforeTick = timer.ElapsedMilliseconds;
             roomManager.UpdateRooms();
             roomManager.FlushRooms();
         }

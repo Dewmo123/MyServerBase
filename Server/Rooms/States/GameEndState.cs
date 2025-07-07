@@ -32,19 +32,16 @@ namespace Server.Rooms.States
         public override void Update()
         {
             if (!isEnd)
+            {
                 base.Update();
+                _endCount.UpdateDeltaTime();
+            }
         }
         S_SyncTimer _timerPacket = new();
         private void HandleElapsed(double obj)
         {
             _timerPacket.time = (float)(_endTime - obj);
             _room.Broadcast(_timerPacket);
-        }
-        public override void Dispose()
-        {
-            base.Dispose();
-            if (_endCount.IsRunning)
-                _endCount.Abort(false);
         }
     }
 }

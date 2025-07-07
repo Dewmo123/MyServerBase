@@ -18,6 +18,11 @@ namespace Server.Rooms.States
             _bombCount.SetEndTime(_room.bombTime);
             _bombCount.StartCount();
         }
+        public override void Update()
+        {
+            base.Update();
+            _bombCount.UpdateDeltaTime();
+        }
         public override void Exit()
         {
             base.Exit();
@@ -39,12 +44,6 @@ namespace Server.Rooms.States
         private void HandleBomb()
         {
             _room.NextRound(_room.Attacker);
-        }
-        public override void Dispose()
-        {
-            base.Dispose();
-            if (_bombCount.IsRunning)
-                _bombCount.Abort(false);
         }
     }
 }

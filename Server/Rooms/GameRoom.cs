@@ -296,7 +296,6 @@ namespace Server.Rooms
         public override void AllPlayerExit()
         {
             base.AllPlayerExit();
-            _stateMachine?.Dispose();
             Console.WriteLine("Dispose");
             _stateMachine = null;
         }
