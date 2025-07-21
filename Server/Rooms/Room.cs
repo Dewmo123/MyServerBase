@@ -92,7 +92,7 @@ namespace Server.Rooms
         public void AddObject(ObjectBase obj)
         {
             _objects.Add(++_objectIdGenerator, obj);
-            Console.WriteLine($"add:{_objectIdGenerator}");
+            //Console.WriteLine($"add:{_objectIdGenerator}");
             obj.index = _objectIdGenerator;
         }
         public void RemoveObject(int index)

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 
 namespace Server.Rooms
 {
@@ -48,6 +49,7 @@ namespace Server.Rooms
         #region Initializer
         public GameRoom(RoomManager roomManager, string name, int roomId) : base(roomManager, roomId, name)
         {
+            Console.WriteLine($"ID:{Thread.CurrentThread.ManagedThreadId}");
             _stateMachine = new RoomStateMachine(this);
             _initObjects.plantAreas = new List<PlantAreaInfo>();
             _initObjects.doors = new List<DoorInfo>();

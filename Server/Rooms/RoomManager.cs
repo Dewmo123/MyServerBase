@@ -1,6 +1,7 @@
 ﻿using ServerCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Server.Rooms
@@ -68,7 +69,10 @@ namespace Server.Rooms
                 _rwLock.EnterWriteLock();
                 int id = ++_roomIdGenerator;
                 Console.WriteLine($"Generate Room: {id}");
+                Stopwatch watch = Stopwatch.StartNew();
                 GameRoom room = new(Instance, packet.roomName, id);
+                Console.WriteLine($"GenrateTime: {watch.ElapsedTicks}");
+                watch.Stop();
                 room.Push(() => room.SetUpRoom(packet));
                 _rooms.Add(id, room);
                 return id;

@@ -14,13 +14,13 @@ namespace DummyClient
 		static void Main(string[] args)
 		{
 			// DNS (Domain Name System)
-			IPEndPoint endPoint = new IPEndPoint(Dns.GetHostEntry("akhge.duckdns.org").AddressList[0], 3303);
+			IPEndPoint endPoint = new IPEndPoint(/*Dns.GetHostEntry("akhge.duckdns.org").AddressList[0]*/IPAddress.Parse("127.0.0.1"), 3303);
 
 			Connector connector = new Connector();
 
 			connector.Connect(endPoint, 
 				() => { return SessionManager.Instance.Generate(); },
-				1);
+				15);
 
 			while (true)
 			{
