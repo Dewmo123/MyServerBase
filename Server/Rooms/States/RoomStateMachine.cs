@@ -2,29 +2,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Server.Rooms.States
 {
-    internal class RoomStateMachine
+    internal class RoomStateMachine<TOwner,TTopProduct,TEnum>
+        where TEnum : Enum 
+        where TTopProduct : IState<TEnum>
+        where TOwner : Room
     {
-        private Dictionary<RoomState, GameRoomState> _states;
-        public GameRoomState CurrentState { get; private set; }
-        public RoomState CurrentStateEnum { get; private set; }
-        public RoomStateMachine(GameRoom room)
+        private Dictionary<TEnum, TTopProduct> _states;
+        public TTopProduct CurrentState { get; private set; }
+        public TEnum CurrentStateEnum { get; private set; }
+        public RoomStateMachine(TOwner room,List<Func<TOwner,TTopProduct>> stateFactory)
         {
-            _states = new Dictionary<RoomState, GameRoomState>();
-            Assembly fsmAssembly = Assembly.GetAssembly(typeof(GameRoomState));
-            List<Type> types = fsmAssembly.GetTypes()
-                .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(GameRoomState)))
-                .ToList();
-            types.ForEach(type => _states.Add(
-                EnumHelper.StringToEnum<RoomState>(type.Name.Replace("State", ""))
-                , Activator.CreateInstance(type, room) as GameRoomState));
+            _states = new();
+            foreach(var item in stateFactory)
+            {
+                TTopProduct product = item.Invoke(room);
+                _states.Add(product.EnumType, product);
+            }
         }
-        public void ChangeState(RoomState type)
+
+        public void ChangeState(TEnum type)
         {
-            if (_states.TryGetValue(type, out GameRoomState state))
+            Console.WriteLine($"ChangeState: {type}");
+            if (_states.TryGetValue(type, out TTopProduct state))
             {
                 CurrentState?.Exit();
                 CurrentStateEnum = type;
