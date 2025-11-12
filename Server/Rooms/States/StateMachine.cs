@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Server.Rooms.States
 {
-    internal class RoomStateMachine<TOwner,TTopProduct,TEnum>
+    internal class StateMachine<TOwner,TTopProduct,TEnum>
         where TEnum : Enum 
         where TTopProduct : IState<TEnum>
         where TOwner : Room
@@ -15,7 +15,7 @@ namespace Server.Rooms.States
         private Dictionary<TEnum, TTopProduct> _states;
         public TTopProduct CurrentState { get; private set; }
         public TEnum CurrentStateEnum { get; private set; }
-        public RoomStateMachine(TOwner room,List<Func<TOwner,TTopProduct>> stateFactory)
+        public StateMachine(TOwner room,List<Func<TOwner,TTopProduct>> stateFactory)
         {
             _states = new();
             foreach(var item in stateFactory)

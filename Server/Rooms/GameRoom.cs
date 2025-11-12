@@ -13,7 +13,7 @@ namespace Server.Rooms
     internal class GameRoom : Room
     {
         public bool CanAddPlayer => SessionCount < MaxSessionCount && _stateMachine.CurrentStateEnum == RoomState.Lobby;
-        private RoomStateMachine<GameRoom,GameRoomState,RoomState> _stateMachine;
+        private StateMachine<GameRoom,GameRoomState,RoomState> _stateMachine;
         public RoomState CurrentState => _stateMachine.CurrentStateEnum;
         #region Game
         public Team Attacker { get; private set; }
@@ -49,9 +49,9 @@ namespace Server.Rooms
         #region Initializer
         public GameRoom(RoomManager roomManager, string name, int roomId) : base(roomManager, roomId, name)
         {
-            StateMachineGenerator<GameRoom, GameRoomState, RoomState>.AddStateFactory("GameRoom", "room");
+            StateMachineFactory<GameRoom, GameRoomState, RoomState>.AddStateFactory("GameRoom", "room");
             Console.WriteLine($"ID:{Thread.CurrentThread.ManagedThreadId}");
-            _stateMachine = StateMachineGenerator<GameRoom, GameRoomState, RoomState>.GenerateMachine(this, "GameRoom");
+            _stateMachine = StateMachineFactory<GameRoom, GameRoomState, RoomState>.GenerateMachine(this, "GameRoom");
             _initObjects.plantAreas = new List<PlantAreaInfo>();
             _initObjects.doors = new List<DoorInfo>();
             _initObjects.breakableWalls = new List<BreakableWallInfo>();

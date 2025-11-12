@@ -6,7 +6,13 @@ using System.Reflection;
 
 namespace Server.Rooms.States
 {
-    internal class StateMachineGenerator<TOwner, TTopProduct, TEnum>
+    /// <summary>
+    /// StateMachine 생성해주는 클래스입니다.
+    /// </summary>
+    /// <typeparam name="TOwner">State들에게 주입될 객체 타입입니다.</typeparam>
+    /// <typeparam name="TTopProduct">가장 상위인 추상 클래스 타입입니다. IState를 구현해야 합니다.</typeparam>
+    /// <typeparam name="TEnum">State들을 관리할 Enum 타입입니다.</typeparam>
+    internal class StateMachineFactory<TOwner, TTopProduct, TEnum>
         where TEnum : Enum
         where TTopProduct : IState<TEnum>
         where TOwner : Room
@@ -32,9 +38,9 @@ namespace Server.Rooms.States
             }
             _stateFactory.Add(key, factory);
         }
-        public static RoomStateMachine<TOwner,TTopProduct,TEnum> GenerateMachine(TOwner owner,string key)
+        public static StateMachine<TOwner,TTopProduct,TEnum> GenerateMachine(TOwner owner,string key)
         {
-            return new RoomStateMachine<TOwner, TTopProduct, TEnum>(owner, _stateFactory.GetValueOrDefault(key));
+            return new StateMachine<TOwner, TTopProduct, TEnum>(owner, _stateFactory.GetValueOrDefault(key));
         }
     }
 }
