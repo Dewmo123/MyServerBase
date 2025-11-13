@@ -4,8 +4,6 @@ using ServerCore;
 using System;
 using System.Diagnostics;
 using System.Net;
-using System.Timers;
-using Timer = System.Timers.Timer;
 
 
 namespace Server
@@ -15,6 +13,8 @@ namespace Server
         static Listener _listener = new Listener();
         public static RoomManager roomManager = RoomManager.Instance;
         public static Stopwatch timer;
+        private static long _frameCnt, _prevTick;
+        private static float _frameTime;
         static void Main(string[] args)
         {
             // DNS (Domain Name System)
@@ -22,44 +22,26 @@ namespace Server
             timer = new();
             _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
             Console.WriteLine("Listening...");
-            InitFlushTimer();
+            //InitFlushTimer();
             //InitUpdateTimer();
-            while (true) { }
-            //FlushRoom();
-        }
-        //private static void InitUpdateTimer()
-        //{
-        //    Timer updateTimer = new Timer(30);
-        //    updateTimer.Enabled = true;
-        //    updateTimer.AutoReset = true;
-        //}
-        private static void InitFlushTimer()
-        {
-            Timer flushTimer = new Timer(15);
             timer.Restart();
-            flushTimer.Elapsed += UpdateLoop;
-            flushTimer.Enabled = true;
-            flushTimer.AutoReset = true;
-            Timer syncTimer = new Timer(3000);
-            syncTimer.Elapsed += SyncTime;
-            syncTimer.Enabled = true;
-            syncTimer.AutoReset = true;
-        }
-        static S_BroadcastTime time = new();
-        private static void SyncTime(object sender, ElapsedEventArgs e)
-        {
-            time.time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            SessionManager.Instance.BroadcastAll(time);
-        }
-        static long beforeTick;
-        private static void UpdateLoop(object sender, ElapsedEventArgs e)
-        {
-            float deltaTime = (timer.ElapsedMilliseconds - beforeTick)/1000f;
-            //Console.WriteLine(deltaTime);
-            Time.deltaTime = deltaTime;
-            beforeTick = timer.ElapsedMilliseconds;
-            roomManager.UpdateRooms();
-            roomManager.FlushRooms();
+            while (true)
+            {
+                long currentTick = timer.ElapsedTicks;
+                Time.deltaTime = ((float)(currentTick - _prevTick) / Stopwatch.Frequency);
+                _prevTick = currentTick;
+                _frameCnt++;
+                _frameTime += Time.deltaTime;
+                if (_frameTime > 1f)
+                {
+                    long fps = (long)(_frameCnt / _frameTime);
+                    _frameCnt = 0;
+                    _frameTime = 0;
+                    Console.WriteLine($"fps: {fps}, delTime:{Time.deltaTime}");
+                }
+                roomManager.UpdateRooms();
+                roomManager.FlushRooms();
+            }
         }
     }
 }
