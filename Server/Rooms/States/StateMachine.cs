@@ -15,12 +15,12 @@ namespace Server.Rooms.States
         private Dictionary<TEnum, TTopProduct> _states;
         public TTopProduct CurrentState { get; private set; }
         public TEnum CurrentStateEnum { get; private set; }
-        public StateMachine(TOwner room,List<Func<TOwner,TTopProduct>> stateFactory)
+        public StateMachine(TOwner owner,List<Func<TOwner,TTopProduct>> stateFactory)
         {
             _states = new();
             foreach(var item in stateFactory)
             {
-                TTopProduct product = item.Invoke(room);
+                TTopProduct product = item.Invoke(owner);
                 _states.Add(product.EnumType, product);
             }
         }

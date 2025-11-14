@@ -17,7 +17,6 @@ namespace Server.Rooms
             _roomManager = manager;
             RoomId = roomId;
             RoomName = name;
-
         }
         protected Dictionary<int, ClientSession> _sessions = new Dictionary<int, ClientSession>();
         private JobQueue _jobQueue = new();
@@ -80,7 +79,7 @@ namespace Server.Rooms
             }
             else
             {
-                Broadcast(new S_RoomExit() { Index = session.PlayerId });
+                //Broadcast(new S_RoomExit() { Index = session.PlayerId });
             }
         }
 
@@ -98,14 +97,7 @@ namespace Server.Rooms
         public void RemoveObject(int index)
         {
             _objects.Remove(index);
-            Broadcast(new S_RemoveObject() { index = index });
-        }
-        public void ReviveAllPlayer()
-        {
-            foreach (var session in Sessions)
-            {
-                GetObject<Player>(session.Value.PlayerId).Revive();
-            }
+            //Broadcast(new S_RemoveObject() { index = index });
         }
         public T GetObject<T>(int id) where T : ObjectBase
         {

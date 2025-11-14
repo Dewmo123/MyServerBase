@@ -21,9 +21,7 @@ namespace Server
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 3303);
             timer = new();
             _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
-            Console.WriteLine("Listening...");
-            //InitFlushTimer();
-            //InitUpdateTimer();
+            Console.WriteLine("Listening..."); 
             timer.Restart();
             while (true)
             {

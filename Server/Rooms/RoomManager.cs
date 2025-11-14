@@ -62,7 +62,7 @@ namespace Server.Rooms
                 _rwLock.ExitReadLock();
             }
         }
-        public int GenerateRoom(C_CreateRoom packet)
+        public int GenerateRoom(string roomName)
         {
             try
             {
@@ -70,10 +70,9 @@ namespace Server.Rooms
                 int id = ++_roomIdGenerator;
                 Console.WriteLine($"Generate Room: {id}");
                 Stopwatch watch = Stopwatch.StartNew();
-                GameRoom room = new(Instance, packet.roomName, id);
+                GameRoom room = new(Instance,id, roomName);
                 Console.WriteLine($"GenrateTime: {watch.ElapsedTicks}");
                 watch.Stop();
-                room.Push(() => room.SetUpRoom(packet));
                 _rooms.Add(id, room);
                 return id;
             }
@@ -83,28 +82,28 @@ namespace Server.Rooms
                     _rwLock.ExitWriteLock();
             }
         }
-        public List<RoomInfoPacket> GetRoomInfos()
-        {
-            try
-            {
-                _rwLock.EnterReadLock();
-                List<RoomInfoPacket> list = new List<RoomInfoPacket>();
-                foreach (var room in _rooms)
-                {
-                    list.Add(new RoomInfoPacket()
-                    {
-                        roomName = room.Value.RoomName,
-                        roomId = room.Key,
-                        maxCount = room.Value.MaxSessionCount,
-                        currentCount = room.Value.SessionCount
-                    });
-                }
-                return list;
-            }
-            finally
-            {
-                _rwLock.ExitReadLock();
-            }
-        }
+        //public List<RoomInfoPacket> GetRoomInfos()
+        //{
+        //    try
+        //    {
+        //        _rwLock.EnterReadLock();
+        //        List<RoomInfoPacket> list = new List<RoomInfoPacket>();
+        //        foreach (var room in _rooms)
+        //        {
+        //            list.Add(new RoomInfoPacket()
+        //            {
+        //                roomName = room.Value.RoomName,
+        //                roomId = room.Key,
+        //                maxCount = room.Value.MaxSessionCount,
+        //                currentCount = room.Value.SessionCount
+        //            });
+        //        }
+        //        return list;
+        //    }
+        //    finally
+        //    {
+        //        _rwLock.ExitReadLock();
+        //    }
+        //}
     }
 }
