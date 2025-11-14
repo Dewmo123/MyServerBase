@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,7 +36,6 @@ namespace ServerCore
 
             return num;
         }
-
         public static ushort ReadDataPacketData<T>(ArraySegment<byte> buffer, int offset, out T result) where T : IDataPacket, new()
         {
             ushort num = 0;

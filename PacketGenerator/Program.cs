@@ -156,7 +156,7 @@ namespace PacketGenerator
         public static string GetListMember(XmlReader r)
         {
             r.Read();
-            return FirstCharToUpper(r.Name);
+            return r.Name;
         }
         public static string FirstCharToUpper(string input)
         {
