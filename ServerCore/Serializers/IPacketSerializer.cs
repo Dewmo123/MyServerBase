@@ -5,6 +5,7 @@ namespace ServerCore.Serializers
 {
     public interface IPacketSerializer
     {
+        public ushort Offset { get; }
         void SerializeObject<T>(ref T value) where T : IPacketSerializable;
         void SerializeObject<T>(ref T[] values) where T : IPacketSerializable;
         void SerializeObject<T>(ref List<T> values) where T : IPacketSerializable, new();

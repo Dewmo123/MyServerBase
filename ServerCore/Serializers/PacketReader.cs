@@ -8,12 +8,12 @@ namespace ServerCore.Serializers
     public struct PacketReader : IPacketSerializer
     {
         private ArraySegment<byte> buffer;
-        private ushort offset;
+        public ushort Offset { get; private set; }
         private static readonly Encoding encoding = Encoding.UTF8;
         public PacketReader(ArraySegment<byte> buffer, ushort offset = 0)
         {
             this.buffer = buffer;
-            this.offset = offset;
+            this.Offset = offset;
         }
         public void SerializeObject<T>(ref T value) where T : IPacketSerializable
         {
@@ -45,11 +45,11 @@ namespace ServerCore.Serializers
         public unsafe void Serialize<T>(ref T value) where T : unmanaged
         {
             ushort size = (ushort)sizeof(T);
-            if (buffer.Count - offset < size)
-                throw new Exception($"Not enough buffer: required {size}, available {buffer.Count - offset}");
+            if (buffer.Count - Offset < size)
+                throw new Exception($"Not enough buffer: required {size}, available {buffer.Count - Offset}");
 
-            value = MemoryMarshal.Read<T>(new Span<byte>(buffer.Array, buffer.Offset + offset, size));
-            offset += size;
+            value = MemoryMarshal.Read<T>(new Span<byte>(buffer.Array, buffer.Offset + Offset, size));
+            Offset += size;
         }
 
         public void Serialize<T>(ref T[] values) where T : unmanaged
@@ -81,11 +81,11 @@ namespace ServerCore.Serializers
 
             ushort size = 0;
             Serialize(ref size);
-            if (buffer.Count - offset < size)
-                throw new Exception($"Not enough buffer: required {size}, available {buffer.Count - offset}");
+            if (buffer.Count - Offset < size)
+                throw new Exception($"Not enough buffer: required {size}, available {buffer.Count - Offset}");
 
-            value = encoding.GetString(buffer.Array, buffer.Offset + offset, size);
-            offset += size;
+            value = encoding.GetString(buffer.Array, buffer.Offset + Offset, size);
+            Offset += size;
         }
 
         public void Serialize(ref string[] values)

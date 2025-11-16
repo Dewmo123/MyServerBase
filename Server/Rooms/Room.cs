@@ -1,5 +1,6 @@
 ﻿using Server.Objects;
 using ServerCore;
+using ServerCore.Serializers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -57,7 +58,10 @@ namespace Server.Rooms
 
         public void Broadcast(IPacket packet)
         {
-            _pendingList.Enqueue(packet.Serialize());
+            ArraySegment<byte> buffer = SendBufferHelper.Open(4096);
+            PacketWriter writer = new PacketWriter(buffer);
+            packet.Serialize(ref writer);
+            _pendingList.Enqueue(SendBufferHelper.Close(writer.Offset));
         }
         public ClientSession GetSession(int key)
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ServerCore.Serializers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,15 +7,11 @@ using System.Threading.Tasks;
 
 namespace ServerCore
 {
-    public interface IPacket
+    public interface IPacket : IPacketSerializable
     {
         ushort Protocol { get; }
-        ArraySegment<byte> Serialize();
-        void Deserialize(ArraySegment<byte> segment);
     }
-    public interface IDataPacket
+    public interface IDataPacket : IPacketSerializable
     {
-        ushort Serialize(ArraySegment<byte> segment, int offset);
-        ushort Deserialize(ArraySegment<byte> segment, int offset);
     }
 }

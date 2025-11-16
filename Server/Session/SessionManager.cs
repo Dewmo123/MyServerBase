@@ -1,4 +1,5 @@
 ﻿using ServerCore;
+using ServerCore.Serializers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -40,8 +41,11 @@ namespace Server
         }
         public void BroadcastAll(IPacket packet)
         {
+            ArraySegment<byte> buffer = SendBufferHelper.Open(4096);
+            PacketWriter writer = new PacketWriter(buffer);
+            packet.Serialize(ref writer);
             foreach (var item in _sessions)
-                item.Value.Send(packet.Serialize());
+                item.Value.Send(SendBufferHelper.Close(writer.Offset));
         }
     }
 }
