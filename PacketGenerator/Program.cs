@@ -68,12 +68,12 @@ namespace PacketGenerator
                 return;
             }
 
-            Tuple<string, string, string> t = ParseMembers(r);
+            (string, string)? t = ParseMembers(r);
             if (isDataPacket)
-                genPackets += string.Format(PacketFormat.dataPacketFormat, packetName, t.Item1, t.Item2, t.Item3);
+                genPackets += string.Format(PacketFormat.dataPacketFormat, packetName, t.Value.Item1, t.Value.Item2);
             else
             {
-                genPackets += string.Format(PacketFormat.packetFormat, packetName, t.Item1, t.Item2, t.Item3);
+                genPackets += string.Format(PacketFormat.packetFormat, packetName, t.Value.Item1, t.Value.Item2);
                 packetEnums += string.Format(PacketFormat.packetEnumFormat, packetName, ++packetId) + Environment.NewLine + "\t";
             }
 
@@ -86,13 +86,12 @@ namespace PacketGenerator
         // {1} 멤버 변수들
         // {2} 멤버 변수 Read
         // {3} 멤버 변수 Write
-        public static Tuple<string, string, string> ParseMembers(XmlReader r)
+        public static (string, string)? ParseMembers(XmlReader r)
         {
             string packetName = r["name"];
 
             string memberCode = "";
-            string readCode = "";
-            string writeCode = "";
+            string serializeCode = "";
 
             int depth = r.Depth + 1;
             while (r.Read())
@@ -110,48 +109,24 @@ namespace PacketGenerator
                     return null;
                 }
 
+
                 if (string.IsNullOrEmpty(memberCode) == false)
                     memberCode += Environment.NewLine;
-                if (string.IsNullOrEmpty(readCode) == false)
-                    readCode += Environment.NewLine;
-                if (string.IsNullOrEmpty(writeCode) == false)
-                    writeCode += Environment.NewLine;
+                if (string.IsNullOrEmpty(serializeCode) == false)
+                    serializeCode += Environment.NewLine;
 
                 string memberType = r.Name;
                 string changedType = FirstCharToUpper(memberType);
-                switch (memberType)
-                {
-                    case "byte":
-                    case "sbyte":
-                    case "bool":
-                    case "short":
-                    case "ushort":
-                    case "int":
-                    case "long":
-                    case "float":
-                    case "double":
-                    case "string":
-                        memberCode += string.Format(PacketFormat.memberFormat, memberType, memberName);
-                        readCode += string.Format(PacketFormat.readFormat, changedType, memberName);
-                        writeCode += string.Format(PacketFormat.writeFormat, changedType, memberName);
-                        break;
-                    case "list":
-                        memberCode += string.Format(PacketFormat.memberListFormat, GetListMember(r), memberName);
-                        readCode += string.Format(PacketFormat.readFormat, changedType, memberName);
-                        writeCode += string.Format(PacketFormat.writeFormat, changedType, memberName);
-                        break;
-                    default:
-                        memberCode += string.Format(PacketFormat.memberFormat, memberType, memberName);
-                        readCode += string.Format(PacketFormat.readFormat, "DataPacket", memberName);
-                        writeCode += string.Format(PacketFormat.writeFormat, "DataPacket", memberName);
-                        break;
-                }
+                if (memberType == "list")
+                    memberCode += string.Format(PacketFormat.memberListFormat, GetListMember(r), memberName);
+                else
+                    memberCode += string.Format(PacketFormat.memberFormat, memberType, memberName);
+                serializeCode += string.Format(PacketFormat.serializeFormat, memberName);
             }
 
             memberCode = memberCode.Replace("\n", "\n\t");
-            readCode = readCode.Replace("\n", "\n\t\t");
-            writeCode = writeCode.Replace("\n", "\n\t\t");
-            return new Tuple<string, string, string>(memberCode, readCode, writeCode);
+            serializeCode = serializeCode.Replace("\n", "\n\t\t");
+            return new (memberCode, serializeCode);
         }
         public static string GetListMember(XmlReader r)
         {

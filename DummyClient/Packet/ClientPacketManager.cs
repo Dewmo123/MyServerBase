@@ -1,7 +1,8 @@
-﻿using ServerCore;
-using ServerCore.Serializers;
+using ServerCore;
 using System;
 using System.Collections.Generic;
+using ServerCore.Serializers;
+
 
 class PacketManager
 {
@@ -36,7 +37,7 @@ class PacketManager
 	{
 		T pkt = new T();
 		PacketReader reader = new PacketReader(buffer);
-        pkt.Serialize(ref reader);
+		pkt.Serialize(ref reader);
 		Action<PacketSession, IPacket> action = null;
 		if (_handler.TryGetValue(pkt.Protocol, out action))
 			action.Invoke(session, pkt);

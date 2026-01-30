@@ -11,10 +11,10 @@ namespace ServerCore.Serializers
         private ArraySegment<byte> buffer;
         public ushort Offset { get; private set; }
         private static readonly Encoding encoding = Encoding.UTF8;
-        public PacketWriter(ArraySegment<byte> buffer, ushort offset = 0)
+        public PacketWriter(ArraySegment<byte> buffer)
         {
             this.buffer = buffer;
-            this.Offset = offset;
+            this.Offset = 2;
         }
         public void SerializeObject<T>(ref T value) where T : IPacketSerializable
         {
@@ -102,6 +102,14 @@ namespace ServerCore.Serializers
                 string value = values[i];
                 Serialize(ref value);
             }
+        }
+
+        public void SerializeOffset()
+        {
+            ushort beforeOffset = Offset;
+            Offset = 0;
+            Serialize(ref beforeOffset);
+            Offset = beforeOffset;
         }
     }
 }

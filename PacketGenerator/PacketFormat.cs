@@ -11,6 +11,8 @@ namespace PacketGenerator
 @"using ServerCore;
 using System;
 using System.Collections.Generic;
+using ServerCore.Serializers;
+
 
 class PacketManager
 {{
@@ -44,7 +46,8 @@ class PacketManager
 	void MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T : IPacket, new()
 	{{
 		T pkt = new T();
-		pkt.Deserialize(buffer);
+		PacketReader reader = new PacketReader(buffer);
+		pkt.Serialize(ref reader);
 		Action<PacketSession, IPacket> action = null;
 		if (_handler.TryGetValue(pkt.Protocol, out action))
 			action.Invoke(session, pkt);
@@ -64,6 +67,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using ServerCore;
+using ServerCore.Serializers;
 
 public enum PacketID
 {{
@@ -80,35 +84,23 @@ public enum PacketID
 
         // {0} 패킷 이름
         // {1} 멤버 변수들
-        // {2} 멤버 변수 Read
-        // {3} 멤버 변수 Write
+        // {2} 멤버 변수 Serialize
         public static string packetFormat =
 @"
 public struct {0} : IPacket
 {{
+	public {0}(){{}}
+
 	{1}
 
-	public ushort Protocol {{ get {{ return (ushort)PacketID.{0}; }} }}
+	public ushort Protocol => _protocol;
+	private ushort _protocol = (ushort)PacketID.{0};
 
-	public void Deserialize(ArraySegment<byte> segment)
+    public void Serialize<T>(ref T serializer) where T : struct, IPacketSerializer
 	{{
-		ushort count = 0;
-
-		count += sizeof(ushort);
-		count += sizeof(ushort);
+		serializer.Serialize(ref _protocol);
 		{2}
-	}}
-
-	public ArraySegment<byte> Serialize()
-	{{
-		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
-		ushort count = 0;
-
-		count += sizeof(ushort);
-		count += PacketUtility.AppendUshortData(this.Protocol, segment, count);
-		{3}
-		PacketUtility.AppendUshortData(count, segment, 0);
-		return SendBufferHelper.Close(count);
+		serializer.SerializeOffset();
 	}}
 }}
 ";
@@ -116,76 +108,32 @@ public struct {0} : IPacket
             @"
 public struct {0} : IDataPacket
 {{
+	public {0}(){{}}
+
 	{1}
 
-	public ushort Deserialize(ArraySegment<byte> segment, int offset)
-	{{
-		ushort count = (ushort)offset;
-		{2}
-		return (ushort)(count - offset);
-	}}
-
-	public ushort Serialize(ArraySegment<byte> segment, int offset)
-	{{
-		ushort count = (ushort)offset;
-		{3}
-		return (ushort)(count - offset);
-	}}
+    public void Serialize<T>(ref T serializer) where T : struct, IPacketSerializer
+    {{
+        {2}
+    }}
 }}
 ";
 
         // {0} 변수 형식
         // {1} 변수 이름
         public static string memberFormat =
-@"public {0} {1};";
+@"public {0} {1} = default;";
 
 
         // {0} 변수 형식
         // {1} 변수 이름
         public static string memberListFormat =
-@"public List<{0}> {1};";
-        /// <summary>
-        ///{0} 변수 형식 <br/>
-        ///{1} 변수 이름
+@"public List<{0}> {1} = default;";
+		/// <summary>
+		///{0} 변수 이름 <br/>
 		/// </summary>
-        public static string readFormat =
-@"count += PacketUtility.Read{0}Data(segment, count, out {1});";
-
-        // {0} 변수 이름
-        // {1} 변수 형식
-        public static string readByteFormat =
-@"this.{0} = ({1})segment.Array[segment.Offset + count];
-count += sizeof({1});";
-
-        // {0} 변수 이름
-        public static string readStringFormat =
-@"ushort {0}Len = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
-count += sizeof(ushort);
-this.{0} = Encoding.Unicode.GetString(s.Slice(count, {0}Len));
-count += {0}Len;";
-
-        // {0} 리스트 이름 [대문자]
-        // {1} 리스트 이름 [소문자]
-        public static string readListFormat =
-@"this.{1}s.Clear();
-ushort {1}Len = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
-count += sizeof(ushort);
-for (int i = 0; i < {1}Len; i++)
-{{
-	{0} {1} = new {0}();
-	{1}.Read(s, ref count);
-	{1}s.Add({1});
-}}";
-
-        /// <summary>
-        /// {0}변수 형식<br/>
-        /// {1}변수 이름
-        /// </summary>
-        public static string writeFormat =
-@"count += PacketUtility.Append{0}Data(this.{1}, segment, count);";
-
-
-        // {0} 리스트 이름 [대문자]
-        // {1} 리스트 이름 [소문자]
+		/// 
+		public static string serializeFormat =
+@"serializer.Serialize(ref {0});";
     }
 }

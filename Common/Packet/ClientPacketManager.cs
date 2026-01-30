@@ -1,6 +1,8 @@
 using ServerCore;
 using System;
 using System.Collections.Generic;
+using ServerCore.Serializers;
+
 
 class PacketManager
 {
@@ -34,7 +36,8 @@ class PacketManager
 	void MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T : IPacket, new()
 	{
 		T pkt = new T();
-		pkt.Deserialize(buffer);
+		PacketReader reader = new PacketReader(buffer);
+		pkt.Serialize(ref reader);
 		Action<PacketSession, IPacket> action = null;
 		if (_handler.TryGetValue(pkt.Protocol, out action))
 			action.Invoke(session, pkt);

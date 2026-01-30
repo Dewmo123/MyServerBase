@@ -17,5 +17,7 @@ namespace ServerCore.Serializers
         void Serialize(ref string value);
         void Serialize(ref string[] values);
         void Serialize(ref List<string> values);
+
+        void SerializeOffset();
     }
 }

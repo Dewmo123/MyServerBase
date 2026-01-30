@@ -3,62 +3,64 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using ServerCore;
+using ServerCore.Serializers;
 
 public enum PacketID
 {
+	Test = 1,
 	
 }
 
 public struct VectorPacket : IDataPacket
 {
-	public float x;
-	public float y;
-	public float z;
+	public VectorPacket(){}
 
-	public ushort Deserialize(ArraySegment<byte> segment, int offset)
-	{
-		ushort count = (ushort)offset;
-		count += PacketUtility.ReadFloatData(segment, count, out x);
-		count += PacketUtility.ReadFloatData(segment, count, out y);
-		count += PacketUtility.ReadFloatData(segment, count, out z);
-		return (ushort)(count - offset);
-	}
+	public float x = default;
+	public float y = default;
+	public float z = default;
 
-	public ushort Serialize(ArraySegment<byte> segment, int offset)
-	{
-		ushort count = (ushort)offset;
-		count += PacketUtility.AppendFloatData(this.x, segment, count);
-		count += PacketUtility.AppendFloatData(this.y, segment, count);
-		count += PacketUtility.AppendFloatData(this.z, segment, count);
-		return (ushort)(count - offset);
-	}
+    public void Serialize<T>(ref T serializer) where T : struct, IPacketSerializer
+    {
+        serializer.Serialize(ref x);
+		serializer.Serialize(ref y);
+		serializer.Serialize(ref z);
+    }
 }
 
 public struct QuaternionPacket : IDataPacket
 {
-	public float x;
-	public float y;
-	public float z;
-	public float w;
+	public QuaternionPacket(){}
 
-	public ushort Deserialize(ArraySegment<byte> segment, int offset)
-	{
-		ushort count = (ushort)offset;
-		count += PacketUtility.ReadFloatData(segment, count, out x);
-		count += PacketUtility.ReadFloatData(segment, count, out y);
-		count += PacketUtility.ReadFloatData(segment, count, out z);
-		count += PacketUtility.ReadFloatData(segment, count, out w);
-		return (ushort)(count - offset);
-	}
+	public float x = default;
+	public float y = default;
+	public float z = default;
+	public float w = default;
 
-	public ushort Serialize(ArraySegment<byte> segment, int offset)
+    public void Serialize<T>(ref T serializer) where T : struct, IPacketSerializer
+    {
+        serializer.Serialize(ref x);
+		serializer.Serialize(ref y);
+		serializer.Serialize(ref z);
+		serializer.Serialize(ref w);
+    }
+}
+
+public struct Test : IPacket
+{
+	public Test(){}
+
+	public List<VectorPacket> lists = default;
+	public float asd = default;
+
+	public ushort Protocol => _protocol;
+	private ushort _protocol = (ushort)PacketID.Test;
+
+    public void Serialize<T>(ref T serializer) where T : struct, IPacketSerializer
 	{
-		ushort count = (ushort)offset;
-		count += PacketUtility.AppendFloatData(this.x, segment, count);
-		count += PacketUtility.AppendFloatData(this.y, segment, count);
-		count += PacketUtility.AppendFloatData(this.z, segment, count);
-		count += PacketUtility.AppendFloatData(this.w, segment, count);
-		return (ushort)(count - offset);
+		serializer.Serialize(ref _protocol);
+		serializer.Serialize(ref lists);
+		serializer.Serialize(ref asd);
+		serializer.SerializeOffset();
 	}
 }
 

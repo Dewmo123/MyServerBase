@@ -1,7 +1,8 @@
-﻿using ServerCore;
-using ServerCore.Serializers;
+using ServerCore;
 using System;
 using System.Collections.Generic;
+using ServerCore.Serializers;
+
 
 class PacketManager
 {
