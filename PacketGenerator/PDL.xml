@@ -16,10 +16,4 @@
 	</dataPacket>
 	
 	<!--Packets-->
-	<packet name="Test">
-		<list name="lists">
-			<VectorPacket name="params"/>
-		</list>
-		<float name ="asd"/>
-	</packet>
 </PDL>

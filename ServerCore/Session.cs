@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ServerCore.Serializers;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -92,7 +93,13 @@ namespace ServerCore
                     RegisterSend();
             }
         }
-
+        public void Send(IPacket packet)
+        {
+            ArraySegment<byte> buffer = SendBufferHelper.Open(4096);
+            PacketWriter writer = new PacketWriter(buffer);
+            packet.Serialize(ref writer);
+            Send(SendBufferHelper.Close(writer.Offset));
+        }
         public void Send(ArraySegment<byte> sendBuff)
         {
             lock (_lock)
