@@ -17,12 +17,11 @@ namespace Server.Rooms.States
         where TTopProduct : IState<TEnum>
         where TOwner : Room
     {
-        private static Dictionary<string,List<Func<TOwner, TTopProduct>>> _stateFactory;
+        private static Dictionary<string,List<Func<TOwner, TTopProduct>>> _stateFactory = new();
 
         public static void AddStateFactory(string key, string ownerParamName)
         {
             List<Type> types = new();
-            _stateFactory = new();
             Assembly fsmAssembly = Assembly.GetAssembly(typeof(TTopProduct));
             types = fsmAssembly.GetTypes()
                 .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(TTopProduct)))
