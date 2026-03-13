@@ -1,4 +1,5 @@
 ﻿using ServerCore.Serializers;
+using ServerCore.Utiles;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -6,7 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace ServerCore
+namespace ServerCore.Sockets
 {
     public abstract class PacketSession : Session
     {

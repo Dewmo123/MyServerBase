@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ServerCore
+namespace ServerCore.Utiles
 {
 	public class PriorityQueue<T> where T : IComparable<T>
 	{

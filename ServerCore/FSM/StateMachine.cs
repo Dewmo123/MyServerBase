@@ -1,24 +1,20 @@
-﻿using Server.Utiles;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 
-namespace Server.Rooms.States
+namespace ServerCore.FSM
 {
-    internal class StateMachine<TOwner,TTopProduct,TEnum>
-        where TEnum : Enum 
+    public class StateMachine<TOwner, TTopProduct, TEnum>
+        where TEnum : Enum
         where TTopProduct : IState<TEnum>
-        where TOwner : Room
+        where TOwner : class
     {
         private Dictionary<TEnum, TTopProduct> _states;
         public TTopProduct CurrentState { get; private set; }
         public TEnum CurrentStateEnum { get; private set; }
-        public StateMachine(TOwner owner,List<Func<TOwner,TTopProduct>> stateFactory)
+        public StateMachine(TOwner owner, List<Func<TOwner, TTopProduct>> stateFactory)
         {
             _states = new();
-            foreach(var item in stateFactory)
+            foreach (var item in stateFactory)
             {
                 TTopProduct product = item.Invoke(owner);
                 _states.Add(product.EnumType, product);

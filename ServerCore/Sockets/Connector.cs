@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace ServerCore
+namespace ServerCore.Sockets
 {
     public class Connector
     {

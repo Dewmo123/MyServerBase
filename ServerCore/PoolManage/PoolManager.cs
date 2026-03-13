@@ -1,11 +1,10 @@
-﻿using Server.Events;
-using ServerCore;
+﻿using ServerCore.Utiles;
 using System;
 using System.Collections.Concurrent;
 
-namespace Server.Pool
+namespace ServerCore.PoolManage
 {
-    internal class PoolManager : Singleton<PoolManager>
+    public class PoolManager : Singleton<PoolManager>
     {
         private ConcurrentDictionary<Type, IObjectPool> _pools = new();
         

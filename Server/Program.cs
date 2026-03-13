@@ -1,6 +1,7 @@
 ﻿using Server.Rooms;
 using Server.Utiles;
-using ServerCore;
+using ServerCore.PoolManage;
+using ServerCore.Sockets;
 using System;
 using System.Diagnostics;
 using System.Net;

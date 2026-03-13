@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ServerCore
+namespace ServerCore.Utiles
 {
     public class Singleton<T> where T : new()
     {

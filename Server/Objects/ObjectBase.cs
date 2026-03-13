@@ -1,6 +1,6 @@
 ﻿using Server.Rooms;
 using Server.Utiles;
-using ServerCore;
+using ServerCore.Serializers;
 using System.Numerics;
 
 namespace Server.Objects
