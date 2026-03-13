@@ -21,6 +21,8 @@ namespace ServerCore.FSM
 
         public static void AddStateFactory(string key, string ownerParamName)
         {
+            if (_stateFactory.ContainsKey(key))
+                throw new ArgumentException("동일한 key가 이미 있는 상태");
             List<Type> types = new();
             Assembly fsmAssembly = Assembly.GetAssembly(typeof(TTopProduct));
             types = fsmAssembly.GetTypes()
@@ -39,7 +41,10 @@ namespace ServerCore.FSM
         }
         public static StateMachine<TOwner, TTopProduct, TEnum> GenerateMachine(TOwner owner, string key)
         {
-            return new StateMachine<TOwner, TTopProduct, TEnum>(owner, _stateFactory.GetValueOrDefault(key));
+            if (_stateFactory.TryGetValue(key, out List<Func<TOwner, TTopProduct>> factory))
+                return new StateMachine<TOwner, TTopProduct, TEnum>(owner, factory);
+            else
+                throw new NullReferenceException();
         }
     }
 }
